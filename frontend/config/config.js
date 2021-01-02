@@ -1,0 +1,1 @@
+var fileUploadUrl = "https://document-cloud.hr/documentcloud/upload";

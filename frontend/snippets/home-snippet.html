@@ -1,0 +1,10 @@
+
+<label class="form-label" for="customFile">Upload file</label>
+<input type="file" class="form-control" id="customFile" onclick="$dc.uploadFile();" />
+
+<p>Upload</p>
+
+<form id="uploadForm" method="post" enctype="multipart/form-data">
+  <input id="filesInput" type="file" name="files[]" multiple />
+  <input type="submit" value="Upload File" name="submit" />
+</form>
