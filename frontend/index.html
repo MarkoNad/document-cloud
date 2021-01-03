@@ -71,30 +71,19 @@
   </div>
   <div id="xs-deliver" class="text-center visible-xs">* We Deliver</div>
 
-  <p>Choose a folder, and all files in that folder will be uploaded recursively.</p>
-
-  <h3>Choose Folder</h3>
-  <div class="picker"><input type="file" id="picker" name="fileList" webkitdirectory multiple></div>
-
-  <h3>Percentage</h3>
-  <span id="percentage">0%</span>
-
-  <h3>Progress</h3>
-  <div id="myProgress">
-      <div id="progressBar"></div>
-  </div>
-
-  <h3>Files Uploaded</h3>
-  <!-- <ul id="listing"></ul> -->
-  <span id="listing"></span>
-
-  <h3>Loader Animation</h3>
-  <!-- <ul id="listing"></ul> -->
-  <img id="loader" src="images/loader.gif">
-
   <div id="dialog" title="Basic dialog">
     <p></p>
   </div>
+
+  <h3>Upload folder</h3>
+  <div class="picker"><input type="file" id="picker" name="fileList" webkitdirectory multiple></div>
+
+  <div id="progress-tile" style="display:none">
+      <h3>Uploading</h3>
+      <span id="progress"></span>
+      <img id="loader" src="images/loader.gif">
+  </div>
+
 
 
   <div id="main-content" class="container"></div>

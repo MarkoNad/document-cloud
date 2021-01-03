@@ -342,14 +342,11 @@ dc.uploadFile = function() {
 
 
 
-let picker = document.getElementById('picker');
-let listing = document.getElementById('listing');
 let filesUploaded = 0;
 
-hideUploadAnimation();
-
+let picker = document.getElementById('picker');
 picker.addEventListener('change', e => {
-    resetUploadProgress();
+    showProgressTile();
 
     let total = picker.files.length;
     filesUploaded = 0;
@@ -362,10 +359,16 @@ picker.addEventListener('change', e => {
     }
 });
 
-function resetUploadProgress() {
-    let progressBar = document.getElementById("progressBar");
-    progressBar.style.width = "0px";
-    listing.innerHTML = "None";
+function showProgressTile() {
+    let progressTile = document.getElementById("progress-tile");
+    progressTile.style.display = "block";
+    progressTile.style.visibility = "visible";
+}
+
+function hideProgressTile() {
+    let progressTile = document.getElementById("progress-tile");
+    progressTile.style.display = "none";
+    progressTile.style.visibility = "hidden";
 }
 
 function hideUploadAnimation() {
@@ -380,15 +383,10 @@ function displayUploadAnimation() {
     loader.style.visibility = "visible";
 }
 
-function showProgressBar(filesUploaded, total) {
-    let progressBar = document.getElementById("progressBar");
-    progressBar.innerHTML = Math.round(filesUploaded / total * 100, 100) + "%";
-    progressBar.style.width = Math.round(filesUploaded / total * 100) + "%";
-}
-
-function showPercentage(filesUploaded, total) {
-    let percentage = document.getElementById('percentage');
-    percentage.innerHTML = Math.min(filesUploaded / total * 100, 100).toFixed(2) + "%";
+function showProgress(filesUploaded, total) {
+    var percentage = Math.min(filesUploaded / total * 100, 100).toFixed(2) + "%";
+    let progress = document.getElementById('progress');
+    progress.innerHTML = "Uploaded " + filesUploaded + " of " + total + " files (" + percentage + ").";
 }
 
 function showDialog(text, duration) {
@@ -418,15 +416,13 @@ sendFile = function(file, total) {
 
         if (request.status === 200) {
             filesUploaded++;
-            listing.innerHTML = "Uploaded " + filesUploaded + " of " + total + " files.";
-            showPercentage(filesUploaded, total);
-            showProgressBar(filesUploaded, total);
+            showProgress(filesUploaded, total);
         }
 
         if (filesUploaded >= total) {
-            showDialog("Uploading " + total + " file(s) done!", 3000)
-            listing.innerHTML = "";
-            hideUploadAnimation();
+            showDialog("Uploading " + total + " file(s) done!", 4000)
+            progress.innerHTML = "";
+            hideProgressTile();
         }
     };
 
