@@ -344,17 +344,32 @@ dc.uploadFile = function() {
 
 let filesUploaded = 0;
 
-let picker = document.getElementById('picker');
-picker.addEventListener('change', e => {
+let directoryPicker = document.getElementById('directory-picker');
+directoryPicker.addEventListener('change', e => {
     showProgressTile();
 
-    let total = picker.files.length;
+    let total = directoryPicker.files.length;
     filesUploaded = 0;
 
     displayUploadAnimation();
 
-    for (var i = 0; i < picker.files.length; i++) {
-        var file = picker.files[i];
+    for (var i = 0; i < directoryPicker.files.length; i++) {
+        var file = directoryPicker.files[i];
+        sendFile(file, total);
+    }
+});
+
+let filePicker = document.getElementById('file-picker');
+filePicker.addEventListener('change', e => {
+    showProgressTile();
+
+    let total = filePicker.files.length;
+    filesUploaded = 0;
+
+    displayUploadAnimation();
+
+    for (var i = 0; i < filePicker.files.length; i++) {
+        var file = filePicker.files[i];
         sendFile(file, total);
     }
 });
@@ -404,7 +419,7 @@ function showDialog(text, duration) {
     );
 }
 
-sendFile = function(file, total) {
+sendFile = function sendfile(file, total) {
     var request = new XMLHttpRequest();
 
     request.responseType = 'text';

@@ -75,15 +75,21 @@
     <p></p>
   </div>
 
-  <h3>Upload folder</h3>
-  <div class="picker"><input type="file" id="picker" name="fileList" webkitdirectory multiple></div>
+    <h3>Upload Directory</h3>
+    <div class="picker">
+        <input type="file" id="directory-picker" name="fileList" webkitdirectory multiple>
+    </div>
 
-  <div id="progress-tile" style="display:none">
-      <h3>Uploading</h3>
-      <span id="progress"></span>
-      <img id="loader" src="images/loader.gif">
-  </div>
+    <div id="progress-tile" style="display:none">
+        <h3>Uploading</h3>
+        <span id="progress"></span>
+        <img id="loader" src="images/loader.gif">
+    </div>
 
+    <h3>Upload Files</h3>
+    <div class="file-picker">
+        <input type="file" id="file-picker" name="files" multiple>
+    </div>
 
 
   <div id="main-content" class="container"></div>
