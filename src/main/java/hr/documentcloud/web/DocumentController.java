@@ -7,6 +7,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @RestController("/")
 @Log4j2
@@ -18,21 +19,32 @@ public class DocumentController {
         return "Greetings from Spring Boot!";
     }
 
-//    @PostMapping("addDocument")
-//    public @ResponseBody String addDocument() {
-//        log.info("Adding document.");
-//        return "Document added.";
-//    }
+    @PostMapping("upload-file")
+    public String receiveFile(
+            @RequestParam("file") MultipartFile file,
+            RedirectAttributes redirectAttributes) throws IOException {
 
-    @PostMapping("upload")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) throws IOException {
+        log.info("File: {}", file);
+        log.info("File: {}", file.getOriginalFilename());
 
         String contents = new String(file.getBytes(), StandardCharsets.UTF_8);
         log.info("Contents: " + contents);
 
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
+
+        return "redirect:/";
+    }
+
+    @PostMapping("upload-files")
+    public String receiveFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        log.info("Receiving files: {}", files);
+        for (MultipartFile file : files) {
+            log.info("File: {}", file);
+            log.info("File: {}", file.getOriginalFilename());
+            String contents = new String(file.getBytes(), StandardCharsets.UTF_8);
+            log.info("Contents: " + contents);
+        }
 
         return "redirect:/";
     }

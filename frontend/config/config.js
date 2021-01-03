@@ -1,1 +1,1 @@
-var fileUploadUrl = "https://document-cloud.hr/documentcloud/upload";
+var fileUploadUrl = "https://document-cloud.hr/documentcloud/upload-file";

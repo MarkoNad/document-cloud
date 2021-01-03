@@ -77,35 +77,38 @@ $ajaxUtils.sendGetRequest(
   homeHtml,
   function (responseText) {
     document.querySelector("#main-content").innerHTML = responseText;
-
-    const form = document.querySelector('#uploadForm');
-
-    console.log("Adding event listener to upload form: ", form);
-    form.addEventListener('submit', (e) => {
-      console.log("Submitting.");
-      e.preventDefault()
-
-      const files = document.querySelector('#filesInput').files
-      const formData = new FormData()
-
-      for (let i = 0; i < files.length; i++) {
-        let file = files[i]
-        console.log("file " + i + ": " + file);
-
-        formData.append('file', file)
-      }
-
-      fetch(fileUploadUrl, {
-        method: 'POST',
-        body: formData,
-      }).then((response) => {
-        console.log(response)
-      })
-    });
-
+    // addUploadListener();
   },
   false);
 });
+
+function addUploadListener() {
+  const form = document.querySelector('#uploadForm');
+
+  console.log("Adding event listener to upload form: ", form);
+  form.addEventListener('submit', (e) => {
+    console.log("Submitting.");
+    e.preventDefault()
+
+    const files = document.querySelector('#filesInput').files
+    const formData = new FormData()
+
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i]
+      console.log("file " + i + ": " + file);
+
+      formData.append('files', file)
+      // formData.append(file.name, file);
+    }
+
+    fetch(fileUploadUrl, {
+      method: 'POST',
+      body: formData,
+    }).then((response) => {
+      console.log(response)
+    })
+  });
+}
 
 // Load the menu categories view
 dc.loadMenuCategories = function () {
@@ -339,14 +342,101 @@ dc.uploadFile = function() {
 
 
 
+let picker = document.getElementById('picker');
+let listing = document.getElementById('listing');
+let filesUploaded = 0;
 
+hideUploadAnimation();
 
+picker.addEventListener('change', e => {
+    resetUploadProgress();
 
+    let total = picker.files.length;
+    filesUploaded = 0;
 
+    displayUploadAnimation();
 
+    for (var i = 0; i < picker.files.length; i++) {
+        var file = picker.files[i];
+        sendFile(file, total);
+    }
+});
 
+function resetUploadProgress() {
+    let progressBar = document.getElementById("progressBar");
+    progressBar.style.width = "0px";
+    listing.innerHTML = "None";
+}
 
+function hideUploadAnimation() {
+    let loader = document.getElementById("loader");
+    loader.style.display = "none";
+    loader.style.visibility = "hidden";
+}
 
+function displayUploadAnimation() {
+    let loader = document.getElementById("loader");
+    loader.style.display = "block";
+    loader.style.visibility = "visible";
+}
+
+function showProgressBar(filesUploaded, total) {
+    let progressBar = document.getElementById("progressBar");
+    progressBar.innerHTML = Math.round(filesUploaded / total * 100, 100) + "%";
+    progressBar.style.width = Math.round(filesUploaded / total * 100) + "%";
+}
+
+function showPercentage(filesUploaded, total) {
+    let percentage = document.getElementById('percentage');
+    percentage.innerHTML = Math.min(filesUploaded / total * 100, 100).toFixed(2) + "%";
+}
+
+function showDialog(text, duration) {
+    let dialog = document.getElementById('dialog');
+    dialog.innerHTML = text;
+    $(function() {
+        $("#dialog").dialog();
+    });
+
+    setTimeout(
+        function() {
+            $("#dialog").dialog("close");
+        },
+        duration
+    );
+}
+
+sendFile = function(file, total) {
+    var request = new XMLHttpRequest();
+
+    request.responseType = 'text';
+
+    request.onload = function() {
+        if (request.readyState !== request.DONE) {
+            return;
+        }
+
+        if (request.status === 200) {
+            filesUploaded++;
+            listing.innerHTML = "Uploaded " + filesUploaded + " of " + total + " files.";
+            showPercentage(filesUploaded, total);
+            showProgressBar(filesUploaded, total);
+        }
+
+        if (filesUploaded >= total) {
+            showDialog("Uploading " + total + " file(s) done!", 3000)
+            listing.innerHTML = "";
+            hideUploadAnimation();
+        }
+    };
+
+    var formData = new FormData();
+    formData.set('file', file);
+    formData.set('path', file.webkitRelativePath);
+
+    request.open("POST", fileUploadUrl);
+    request.send(formData);
+};
 
 global.$dc = dc;
 
