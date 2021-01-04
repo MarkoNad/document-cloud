@@ -71,9 +71,14 @@
   </div>
   <div id="xs-deliver" class="text-center visible-xs">* We Deliver</div>
 
-  <div id="dialog" title="Basic dialog">
-    <p></p>
-  </div>
+
+    <h3>Working Directory</h3>
+    <div id="working-directory">
+    </div>
+
+    <div id="dialog" title="Basic dialog">
+      <p></p>
+    </div>
 
     <h3>Upload Directory</h3>
     <div class="picker">
@@ -90,6 +95,14 @@
     <div class="file-picker">
         <input type="file" id="file-picker" name="files" multiple>
     </div>
+
+    <form action="/action_page.php">
+      <label for="fname">First name:</label><br>
+      <input type="text" id="fname" name="fname" value="John"><br>
+      <label for="lname">Last name:</label><br>
+      <input type="text" id="lname" name="lname" value="Doe"><br><br>
+      <input type="submit" value="Submit" onclick="$dc.fetchFileDetails()">
+    </form> 
 
 
   <div id="main-content" class="container"></div>

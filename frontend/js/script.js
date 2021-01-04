@@ -340,6 +340,17 @@ dc.uploadFile = function() {
 
 
 
+var workingDirectory = "/";
+setWorkingDirectory(workingDirectory);
+
+
+function setWorkingDirectory(path) {
+  console.log("Setting workingDirectory to: ", path);
+  localStorage.setItem('workingDirectory', path);
+  var workingDirectoryDiv = document.getElementById('working-directory');
+  workingDirectoryDiv.innerHTML = path;
+}
+
 
 
 let filesUploaded = 0;
@@ -438,16 +449,26 @@ sendFile = function sendfile(file, total) {
             showDialog("Uploading " + total + " file(s) done!", 4000)
             progress.innerHTML = "";
             hideProgressTile();
+            resetPickers();
         }
     };
 
     var formData = new FormData();
+    var relativePath = file.webkitRelativePath ? file.webkitRelativePath : file.name;
+    var path = localStorage.getItem('workingDirectory') + relativePath;
     formData.set('file', file);
-    formData.set('path', file.webkitRelativePath);
+    formData.set('destination', path);
+
+    console.log("path: " , path);
 
     request.open("POST", fileUploadUrl);
     request.send(formData);
 };
+
+function resetPickers() {
+    directoryPicker.value = "";
+    filePicker.value = "";
+}
 
 global.$dc = dc;
 

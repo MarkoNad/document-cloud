@@ -1,52 +1,51 @@
 package hr.documentcloud.web;
 
+import hr.documentcloud.model.DocumentDto;
+import hr.documentcloud.service.DocumentService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController("/")
 @Log4j2
 public class DocumentController {
 
-    @GetMapping("getDocument/{documentId}")
-    public @ResponseBody String getDocument(@PathVariable("documentId") String documentId) {
+    private final DocumentService documentService;
+
+    @Autowired
+    public DocumentController(DocumentService documentService) {
+        this.documentService = documentService;
+    }
+
+    @GetMapping("get-file/{fileId}")
+    public @ResponseBody String getFile(@PathVariable("fileId") String fileId) {
         log.info("Fetching document.");
         return "Greetings from Spring Boot!";
     }
 
     @PostMapping("upload-file")
-    public String receiveFile(
-            @RequestParam("file") MultipartFile file,
-            RedirectAttributes redirectAttributes) throws IOException {
-
-        log.info("File: {}", file);
-        log.info("File: {}", file.getOriginalFilename());
-
-        String contents = new String(file.getBytes(), StandardCharsets.UTF_8);
-        log.info("Contents: " + contents);
-
-        redirectAttributes.addFlashAttribute("message",
-                "You successfully uploaded " + file.getOriginalFilename() + "!");
-
-        return "redirect:/";
+    public void receiveFile(@RequestParam("file") MultipartFile file, @RequestParam("destination") String destination) {
+        log.info("Received request to store file '{}' to {}.", file, destination);
+        try {
+            documentService.storeFile(file, destination);
+        } catch(Exception e) {
+            log.error("Error occurred: ", e);
+            throw e;
+        }
     }
 
-    @PostMapping("upload-files")
-    public String receiveFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
-        log.info("Receiving files: {}", files);
-        for (MultipartFile file : files) {
-            log.info("File: {}", file);
-            log.info("File: {}", file.getOriginalFilename());
-            String contents = new String(file.getBytes(), StandardCharsets.UTF_8);
-            log.info("Contents: " + contents);
+    @GetMapping("get-files-details/{directory}")
+    public @ResponseBody List<DocumentDto> getFilesDetails(@PathVariable("directory") String directory) {
+        log.info("Received request to fetch details for files in directory '{}'.", directory);
+        try {
+            return documentService.fetchFilesDetails(directory);
+        } catch(Exception e) {
+            log.error("Error occurred: ", e);
+            throw e;
         }
-
-        return "redirect:/";
     }
 
 }

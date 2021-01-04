@@ -9,7 +9,7 @@ import javax.persistence.Id;
 
 @Entity
 @Data
-public class Document {
+public class File {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -17,6 +17,14 @@ public class Document {
 
     private String name;
 
+    private String path;
+
     private byte[] contents;
+
+    public File(String name, String path, byte[] contents) {
+        this.name = name;
+        this.path = path;
+        this.contents = contents;
+    }
 
 }
