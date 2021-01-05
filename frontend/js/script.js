@@ -144,14 +144,70 @@ dc.uploadFile = function() {
 const DIRECTORY_DELIMITER = "/";
 
 var workingDirectory = "home";
-setWorkingDirectory(workingDirectory);
+changeDirectory(workingDirectory);
 
+function changeDirectory(directory) {
+    setWorkingDirectory(directory);
+    showPath(directory);
+    showWorkingDirFileDetails();
+}
 
 function setWorkingDirectory(path) {
-  console.log("Setting workingDirectory to: ", path);
-  localStorage.setItem('workingDirectory', path);
-  var workingDirectoryDiv = document.getElementById('working-directory');
-  workingDirectoryDiv.innerHTML = path;
+    console.log("Setting workingDirectory to: ", path);
+    localStorage.setItem('workingDirectory', path);
+}
+
+function showPath(path) {
+    var contents = "";
+
+    var folders = path.split(DIRECTORY_DELIMITER);
+    for (var i = 0; i < folders.length; i++) {
+        if (i != 0) {
+            contents += " > ";
+        }
+        var folder = folders[i];
+        contents += "<a>" + folder + "</a>";
+    }
+
+    var workingDirectoryDiv = document.getElementById('working-directory');
+    workingDirectoryDiv.innerHTML = path;
+}
+
+function showWorkingDirFileDetails() {
+    console.log("Fetching working directory details.");
+
+    var workingDirectory = localStorage.getItem('workingDirectory');
+    console.log("Working directory: ", workingDirectory);
+
+    $ajaxUtils.sendGetRequest(
+        detailsUrl + workingDirectory,
+        renderWorkingDirFileDetails,
+        true
+    );
+
+    function renderWorkingDirFileDetails(detailsArray) {
+        console.log("Response JSON: ", detailsArray);
+
+        var contents = "";
+
+        for (var i = 0; i < detailsArray.length; i++) {
+            var details = detailsArray[i];
+
+            var name = details.name;
+            var type = details.type;
+
+            console.log("name: ", name);
+            console.log("type: ", type);
+
+            contents += "<hr>";
+            contents += "<p>Name: " + name + ", type: " + type;
+        }
+
+        contents += "<hr>";
+
+        var contentsDiv = document.getElementById('working-directory-contents');
+        contentsDiv.innerHTML = contents;
+    }
 }
 
 
@@ -273,22 +329,6 @@ function resetPickers() {
     filePicker.value = "";
 }
 
-
-dc.getWorkingDirFileDetails = function() {
-    console.log("Fetching working directory details.");
-
-    var workingDirectory = localStorage.getItem('workingDirectory');
-    console.log("Working directory: ", workingDirectory);
-
-    $ajaxUtils.sendGetRequest(
-        detailsUrl + workingDirectory,
-        showWorkingDirFileDetails
-    );
-
-    function showWorkingDirFileDetails(responseText) {
-        console.log("Response text: ", responseText);
-    }
-}
 
 global.$dc = dc;
 
