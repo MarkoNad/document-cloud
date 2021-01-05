@@ -2,10 +2,11 @@ package hr.documentcloud.model;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DirectoryStructure implements Serializable {
 
-    private static final String DEFAULT_DIRECTORY_DELIMITER = "/";
+    public static final String DEFAULT_DIRECTORY_DELIMITER = "/";
 
     private final String directoryName;
     private final Set<DirectoryStructure> children;
@@ -89,6 +90,37 @@ public class DirectoryStructure implements Serializable {
         for (DirectoryStructure child : children) {
             child.appendStructure(sb, indentation + 4);
         }
+    }
+
+    public Set<String> getSubfolderNames(String path) {
+        List<String> parts = new LinkedList<>(Arrays.asList(path.split(directoryDelimiter)));
+
+        if (!parts.get(0).equals(directoryName)) {
+            // no such directory
+            return Collections.emptySet();
+        }
+
+        parts.remove(0);
+
+        if (parts.isEmpty()) {
+            return children.stream()
+                    .map(DirectoryStructure::getDirectoryName)
+                    .collect(Collectors.toSet());
+        }
+
+        String childName = parts.get(0);
+
+        Optional<DirectoryStructure> maybeChild = children.stream()
+                .filter(c -> c.getDirectoryName().equals(childName))
+                .findFirst();
+
+        if (!maybeChild.isPresent()) {
+            // no such directory
+            return Collections.emptySet();
+        }
+
+        String pathStartingWithChild = String.join(directoryDelimiter, parts);
+        return maybeChild.get().getSubfolderNames(pathStartingWithChild);
     }
 
 }

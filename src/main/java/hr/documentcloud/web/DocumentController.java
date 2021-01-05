@@ -20,17 +20,11 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @GetMapping("get-file/{fileId}")
-    public @ResponseBody String getFile(@PathVariable("fileId") String fileId) {
-        log.info("Fetching document.");
-        return "Greetings from Spring Boot!";
-    }
-
     @PostMapping("upload-file")
-    public void receiveFile(@RequestParam("file") MultipartFile file, @RequestParam("destination") String destination) {
-        log.info("Received request to store file '{}' to {}.", file, destination);
+    public void receiveFile(@RequestParam("file") MultipartFile file, @RequestParam("absolute-path") String absolutePath) {
+        log.info("Received request to store file '{}' to {}.", file, absolutePath);
         try {
-            documentService.storeFile(file, destination);
+            documentService.storeFile(file, absolutePath);
         } catch(Exception e) {
             log.error("Error occurred: ", e);
             throw e;

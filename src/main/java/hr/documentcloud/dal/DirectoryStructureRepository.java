@@ -1,10 +1,26 @@
 package hr.documentcloud.dal;
 
+import com.querydsl.jpa.impl.JPAQuery;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
-public interface DirectoryStructureRepository {
+@Repository
+@Log4j2
+public class DirectoryStructureRepository extends AbstractRepository<DirectoryStructureContainer> {
 
-    DirectoryStructureContainer save(DirectoryStructureContainer directoryStructureContainer);
-    Optional<DirectoryStructureContainer> getById(Long id);
+    final QDirectoryStructure directoryStructure = QDirectoryStructure.directoryStructure;
+
+    public Optional<DirectoryStructureContainer> get() {
+        log.info("Fetching directory structure container.");
+        Optional<DirectoryStructureContainer> maybeContainer = Optional.ofNullable(new JPAQuery<DirectoryStructureContainer>(em)
+                .from(directoryStructure)
+//                .where(directoryStructure.id.eq(id)) // TODO
+                .fetchFirst()
+        );
+        log.info("Fetched: {}.", maybeContainer.map(Object::toString));
+        return maybeContainer;
+    }
 
 }

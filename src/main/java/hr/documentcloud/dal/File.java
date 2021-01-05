@@ -2,12 +2,14 @@ package hr.documentcloud.dal;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "file",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"name", "path"})
+        }
+)
 @Data
 public class File {
 
@@ -15,11 +17,18 @@ public class File {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "path")
     private String path;
 
+    @Column(name = "contents")
     private byte[] contents;
+
+    private File() {
+        // no-arg ctor for Hibernate
+    }
 
     public File(String name, String path, byte[] contents) {
         this.name = name;

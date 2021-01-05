@@ -8,5 +8,6 @@ import lombok.Data;
 public class DocumentDto {
 
     private String name;
+    private Type type;
 
 }

@@ -4,13 +4,12 @@ import hr.documentcloud.exception.SerializationException;
 import hr.documentcloud.model.DirectoryStructure;
 import lombok.extern.log4j.Log4j2;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.*;
+import java.util.Arrays;
 
 @Entity
+@Table(name = "directory_structure_container")
 @Log4j2
 public class DirectoryStructureContainer {
 
@@ -18,10 +17,15 @@ public class DirectoryStructureContainer {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "structureBytes")
     private byte[] structureBytes;
 
+    private DirectoryStructureContainer() {
+        // no-arg ctor for Hibernate
+    }
+
     public DirectoryStructureContainer(DirectoryStructure structure) {
-        this.structureBytes = serialize(structure);
+        update(structure);
     }
 
     private byte[] serialize(DirectoryStructure structure) {
@@ -50,4 +54,15 @@ public class DirectoryStructureContainer {
         }
     }
 
+    public void update(DirectoryStructure structure) {
+        this.structureBytes = serialize(structure);
+    }
+
+    @Override
+    public String toString() {
+        return "DirectoryStructureContainer{" +
+                "id=" + id +
+                ", directory structure (deserialized)=\n" + deserialize(structureBytes) +
+                '}';
+    }
 }
