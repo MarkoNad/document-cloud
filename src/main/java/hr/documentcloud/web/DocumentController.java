@@ -31,6 +31,17 @@ public class DocumentController {
         }
     }
 
+    @PostMapping("create-directory")
+    public void createDirectory(@RequestParam("directory") String newDirectory) {
+        log.info("Received request to create a new directory: '{}'.", newDirectory);
+        try {
+            documentService.createDirectory(newDirectory);
+        } catch(Exception e) {
+            log.error("Error occurred: ", e);
+            throw e;
+        }
+    }
+
     @GetMapping("get-files-details")
     public @ResponseBody List<DocumentDto> getFilesDetails(@RequestParam("directory") String directory) {
         log.info("Received request to fetch details for files in directory '{}'.", directory);

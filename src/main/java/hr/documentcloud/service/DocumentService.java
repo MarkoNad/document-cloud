@@ -133,4 +133,8 @@ public class DocumentService {
         return dtos;
     }
 
+    public void createDirectory(String newDirectory) {
+        updateDirectoryStructure(newDirectory);
+    }
+
 }

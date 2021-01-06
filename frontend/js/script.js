@@ -246,7 +246,7 @@ function showWorkingDirFileDetails() {
 function populateDirectoryTemplate(directoryName) {
     var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + directoryName;
     return "<div onclick=\"$dc.changeDirectory('" + absolutePath + "')\">" +
-            "<p class=\"material-icons\">" + directoryName + "</p>" +
+            "<i class=\"material-icons\">folder2</i>" +
             "<span>" + directoryName + "</span>" +
         "</div>";
 }
@@ -373,6 +373,34 @@ sendFile = function sendfile(file, total) {
 function resetPickers() {
     directoryPicker.value = "";
     filePicker.value = "";
+}
+
+dc.createDirectory = function() {
+    var newDirectory = prompt("Enter new directory name.");
+    if (newDirectory == null || newDirectory == "") {
+        return;
+    }
+
+    var request = new XMLHttpRequest();
+
+    request.responseType = 'text';
+
+    request.onload = function() {
+        if (request.readyState !== request.DONE) {
+            return;
+        }
+
+        if (request.status === 200) {
+            showWorkingDirFileDetails();
+        }
+    };
+
+    var formData = new FormData();
+    var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + newDirectory;
+    formData.set('directory', absolutePath);
+
+    request.open("POST", createDirectoryUrl);
+    request.send(formData);
 }
 
 dc.changeDirectory = changeDirectory;
