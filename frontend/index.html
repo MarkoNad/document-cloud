@@ -39,21 +39,24 @@
                 <span class="glyphicon glyphicon-home"></span> Home</a>
             </li>
             <li id="navMenuButton">
-              <a href="#" onclick="$dc.uploadFiles();">
-                <span class="glyphicon glyphicon-cutlery"></span><br class="hidden-xs">Upload Files</a>
+              <a href="#" onclick="$dc.performClick('file-picker');">
+                <span class="glyphicon glyphicon-cutlery"></span><br class="hidden-xs">Upload Files
+              </a>
             </li>
             <li>
-              <a href="#" onclick="$dc.uploadDirectory();">
-                <span class="glyphicon glyphicon-info-sign"></span><br class="hidden-xs">Upload Directory</a>
+              <a href="#" onclick="$dc.performClick('directory-picker');">
+                <span class="glyphicon glyphicon-info-sign"></span><br class="hidden-xs">Upload Directory
+              </a>
             </li>
             <li>
               <a href="#" onclick="$dc.createDirectory();">
-                <span class="glyphicon glyphicon-certificate"></span><br class="hidden-xs">Create Directory</a>
+                <span class="glyphicon glyphicon-certificate"></span><br class="hidden-xs">Create Directory
+              </a>
             </li>
-          </ul><!-- #nav-list -->
-        </div><!-- .collapse .navbar-collapse -->
-      </div><!-- .container -->
-    </nav><!-- #header-nav -->
+          </ul>
+        </div>
+      </div>
+    </nav>
   </header>
 
   <div id="main-content" class="container">

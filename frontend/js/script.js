@@ -391,6 +391,15 @@ function getFileExtension(absolutePath) {
     return parts.pop();
 }
 
+dc.performClick = function(elemId) {
+   var elem = document.getElementById(elemId);
+   if(elem && document.createEvent) {
+      var evt = document.createEvent("MouseEvents");
+      evt.initEvent("click", true, false);
+      elem.dispatchEvent(evt);
+   }
+}
+
 dc.changeDirectory = changeDirectory;
 dc.uploadDirectory = uploadDirectory;
 dc.uploadFiles = uploadFiles;
