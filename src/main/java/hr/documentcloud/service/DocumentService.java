@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,21 +45,11 @@ public class DocumentService {
     }
 
     private void storeFilePrivate(MultipartFile multipartFile, String absolutePath) throws IOException {
-        logFile(multipartFile, absolutePath);
-
         String destinationDirectory = determineDestinationDirectory(absolutePath);
         updateDirectoryStructure(destinationDirectory);
 
         String fileName = determineFileName(absolutePath);
         persistFile(multipartFile, fileName, destinationDirectory);
-    }
-
-    private void logFile(MultipartFile multipartFile, String absolutePath) throws IOException {
-        log.info("File: {}", multipartFile);
-        log.info("File: {}", multipartFile.getOriginalFilename());
-        log.info("Destination: {}", absolutePath);
-        String contents = new String(multipartFile.getBytes(), StandardCharsets.UTF_8);
-        log.info("Contents: " + contents);
     }
 
     private void updateDirectoryStructure(String destinationDirectory) {

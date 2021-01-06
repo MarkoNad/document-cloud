@@ -400,8 +400,26 @@ dc.createDirectory = function() {
 }
 
 dc.viewFile = function(absolutePath) {
-    var preview = document.getElementById('preview-image');
-    preview.src = encodeURI(getFileUrl + "?file=" + absolutePath);
+    var preview = document.getElementById('preview');
+
+    var extension = getFileExtension(absolutePath);
+    if (!extension.match(/(jpg|jpeg|png|gif)$/i)) {
+        preview.innerHTML = "<p>No preview available for " + extension + " files.</p>";
+        return;
+    }
+
+    var src = encodeURI(getFileUrl + "?file=" + absolutePath);
+    var imageTag = "<img src='" + src + "' alt='Preview'>";
+
+    preview.innerHTML = imageTag;
+}
+
+function getFileExtension(absolutePath) {
+    var parts = absolutePath.split(".");
+    if (parts.length === 1 || (parts[0] === "" && parts.length === 2)) {
+        return null;
+    }
+    return parts.pop();
 }
 
 dc.changeDirectory = changeDirectory;
