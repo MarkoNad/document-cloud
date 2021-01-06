@@ -10,12 +10,12 @@ import java.util.Optional;
 @Log4j2
 public class DirectoryStructureRepository extends AbstractRepository<DirectoryStructureContainer> {
 
-    final QDirectoryStructure directoryStructure = QDirectoryStructure.directoryStructure;
+    final QDirectoryStructureContainer directoryStructureContainer = QDirectoryStructureContainer.directoryStructureContainer;
 
     public Optional<DirectoryStructureContainer> get() {
         log.info("Fetching directory structure container.");
         Optional<DirectoryStructureContainer> maybeContainer = Optional.ofNullable(new JPAQuery<DirectoryStructureContainer>(em)
-                .from(directoryStructure)
+                .from(directoryStructureContainer)
 //                .where(directoryStructure.id.eq(id)) // TODO
                 .fetchFirst()
         );

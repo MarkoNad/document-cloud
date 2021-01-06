@@ -31,8 +31,8 @@ public class DocumentController {
         }
     }
 
-    @GetMapping("get-files-details/{directory}")
-    public @ResponseBody List<DocumentDto> getFilesDetails(@PathVariable("directory") String directory) {
+    @GetMapping("get-files-details")
+    public @ResponseBody List<DocumentDto> getFilesDetails(@RequestParam("directory") String directory) {
         log.info("Received request to fetch details for files in directory '{}'.", directory);
         try {
             return documentService.fetchFilesDetails(directory);

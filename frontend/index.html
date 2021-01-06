@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>David Chu's China Bistro</title>
+    <title>Home Cloud</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <link href='https://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
 <body>
   <header>
@@ -20,7 +21,7 @@
           </a>
 
           <div class="navbar-brand">
-            <a href="index.html"><h1>David Chu's China Bistro</h1></a>
+            <a href="index.html"><h1>Home Cloud</h1></a>
             <p>
               <img src="images/star-k-logo.png" alt="Kosher certification">
               <span>Kosher Certified</span>
@@ -76,6 +77,12 @@
     <div id="working-directory">
     </div>
 
+    <div onclick="$dc.changeDirectory('home/folder')">
+        <p class="material-icons">folder</p>
+        <span>Folder name</span>
+    </div>
+
+
     <h3>Contents</h3>
     <div id="working-directory-contents">
     </div>
@@ -101,6 +108,13 @@
     </div>
 
     <button onclick="$dc.getWorkingDirFileDetails()">Click me</button>
+
+    <template>
+        <div onclick="$dc.changeDirectory('{{directory_name}}')">
+            <p class="material-icons">{{directory_name}}</p>
+            <span>{{directory_name}}</span>
+        </div>
+    </template>
 
 
   <div id="main-content" class="container"></div>

@@ -1,0 +1,24 @@
+<div onclick="$dc.changeDirectory('{{directory_name}}')">
+    <p class="material-icons">{{directory_name}}</p>
+    <span>{{directory_name}}</span>
+</div>
+
+
+        $ajaxUtils.sendGetRequest(
+            directoryHtml,
+            function (directoryHtml) {
+                console.log("Directory HTML: ", directoryHtml);
+
+                for (var i = 0; i < directoryDetails.length; i++) {
+                    contents += "<hr>";
+                    var directoryName = directoryDetails.name;
+                    var populatedHtml = insertProperty(directoryHtml, "directory_name", directoryName);
+                    contents += populatedHtml;
+                }
+            },
+            false);
+
+
+                        var populatedHtml = insertProperty(template, "directory_name", directoryName);
+            console.log("Populated html: ", populatedHtml);
+            contents += populatedHtml;

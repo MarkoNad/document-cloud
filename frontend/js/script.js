@@ -24,12 +24,7 @@ $(function () { // Same as document.addEventListener("DOMContentLoaded"...
 var dc = {};
 
 var homeHtml = "snippets/home-snippet.html";
-var allCategoriesUrl = "https://davids-restaurant.herokuapp.com/categories.json";
-var categoriesTitleHtml = "snippets/categories-title-snippet.html";
-var categoryHtml = "snippets/category-snippet.html";
-var menuItemsUrl = "https://davids-restaurant.herokuapp.com/menu_items.json?category=";
-var menuItemsTitleHtml = "snippets/menu-items-title.html";
-var menuItemHtml = "snippets/menu-item.html";
+var directoryHtml = "snippets/directory-snippet.html";
 
 // Convenience function for inserting innerHTML for 'select'
 var insertHtml = function (selector, html) {
@@ -157,30 +152,39 @@ function setWorkingDirectory(path) {
     localStorage.setItem('workingDirectory', path);
 }
 
+function getWorkingDirectory() {
+    return localStorage.getItem('workingDirectory');    
+}
+
 function showPath(path) {
     var contents = "";
 
-    var folders = path.split(DIRECTORY_DELIMITER);
-    for (var i = 0; i < folders.length; i++) {
+    var directories = path.split(DIRECTORY_DELIMITER);
+    var absolutePath = "";
+    for (var i = 0; i < directories.length; i++) {
         if (i != 0) {
             contents += " > ";
+            absolutePath += DIRECTORY_DELIMITER;
         }
-        var folder = folders[i];
-        contents += "<a>" + folder + "</a>";
+
+        var directoryName = directories[i];
+        absolutePath += directoryName;
+
+        contents += "<a onclick='$dc.changeDirectory(\"" + absolutePath + "\")'>" + directoryName + "</a>";
     }
 
     var workingDirectoryDiv = document.getElementById('working-directory');
-    workingDirectoryDiv.innerHTML = path;
+    workingDirectoryDiv.innerHTML = contents;
 }
 
 function showWorkingDirFileDetails() {
     console.log("Fetching working directory details.");
 
-    var workingDirectory = localStorage.getItem('workingDirectory');
+    var workingDirectory = getWorkingDirectory();
     console.log("Working directory: ", workingDirectory);
 
     $ajaxUtils.sendGetRequest(
-        detailsUrl + workingDirectory,
+        encodeURI(detailsUrl + "?directory=" + workingDirectory),
         renderWorkingDirFileDetails,
         true
     );
@@ -188,7 +192,8 @@ function showWorkingDirFileDetails() {
     function renderWorkingDirFileDetails(detailsArray) {
         console.log("Response JSON: ", detailsArray);
 
-        var contents = "";
+        var fileDetails = [];
+        var directoryDetails = [];
 
         for (var i = 0; i < detailsArray.length; i++) {
             var details = detailsArray[i];
@@ -196,11 +201,39 @@ function showWorkingDirFileDetails() {
             var name = details.name;
             var type = details.type;
 
+            if (type == "DIRECTORY") {
+                directoryDetails.push(details);
+            } else if (type == "FILE") {
+                fileDetails.push(details);
+            }
+
             console.log("name: ", name);
             console.log("type: ", type);
 
+            // contents += "<hr>";
+            // contents += "<p>Name: " + name + ", type: " + type;
+        }
+
+        var contents = "";
+
+        for (var i = 0; i < directoryDetails.length; i++) {
             contents += "<hr>";
-            contents += "<p>Name: " + name + ", type: " + type;
+            var directoryName = directoryDetails[i].name;
+            console.log("directory name: ", directoryName);
+
+            var directoryNode = populateDirectoryTemplate(directoryName);
+            console.log("Directory node: ", directoryNode);
+            contents += directoryNode;
+        }
+
+        for (var i = 0; i < fileDetails.length; i++) {
+            contents += "<hr>";
+            var fileName = fileDetails[i].name;
+            console.log("file name: ", fileName);
+
+            var fileNode = populateFileTemplate(fileName);
+            console.log("File node: ", fileNode);
+            contents += fileNode;
         }
 
         contents += "<hr>";
@@ -210,7 +243,19 @@ function showWorkingDirFileDetails() {
     }
 }
 
+function populateDirectoryTemplate(directoryName) {
+    var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + directoryName;
+    return "<div onclick=\"$dc.changeDirectory('" + absolutePath + "')\">" +
+            "<p class=\"material-icons\">" + directoryName + "</p>" +
+            "<span>" + directoryName + "</span>" +
+        "</div>";
+}
 
+function populateFileTemplate(fileName) {
+    return "<div>" +
+            "<p>" + fileName + "</p>" +
+        "</div>";
+}
 
 let filesUploaded = 0;
 
@@ -309,12 +354,13 @@ sendFile = function sendfile(file, total) {
             progress.innerHTML = "";
             hideProgressTile();
             resetPickers();
+            showWorkingDirFileDetails();
         }
     };
 
     var formData = new FormData();
     var relativePath = file.webkitRelativePath ? file.webkitRelativePath : file.name;
-    var path = localStorage.getItem('workingDirectory') + DIRECTORY_DELIMITER + relativePath;
+    var path = getWorkingDirectory() + DIRECTORY_DELIMITER + relativePath;
     formData.set('file', file);
     formData.set('absolute-path', path);
 
@@ -328,6 +374,8 @@ function resetPickers() {
     directoryPicker.value = "";
     filePicker.value = "";
 }
+
+dc.changeDirectory = changeDirectory;
 
 
 global.$dc = dc;
