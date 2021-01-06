@@ -5,10 +5,12 @@ import hr.documentcloud.dal.DirectoryStructureRepository;
 import hr.documentcloud.dal.File;
 import hr.documentcloud.dal.FileRepository;
 import hr.documentcloud.exception.FileStoringException;
+import hr.documentcloud.exception.ResourceNotFoundException;
 import hr.documentcloud.model.DirectoryStructure;
 import hr.documentcloud.model.DocumentDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,12 +63,6 @@ public class DocumentService {
         log.info("Contents: " + contents);
     }
 
-    private String determineDestinationDirectory(String destination) {
-        String directory = destination.substring(0, destination.lastIndexOf(DEFAULT_DIRECTORY_DELIMITER));
-        log.info("Calculated directory: '{}'.", directory);
-        return directory;
-    }
-
     private void updateDirectoryStructure(String destinationDirectory) {
         log.info("Updating directory structure with destination directory '{}'.", destinationDirectory);
 
@@ -85,6 +81,12 @@ public class DocumentService {
             log.info("Inserting new directory structure.");
             directoryStructureRepository.persist(container);
         }
+    }
+
+    private String determineDestinationDirectory(String destination) {
+        String directory = destination.substring(0, destination.lastIndexOf(DEFAULT_DIRECTORY_DELIMITER));
+        log.info("Calculated directory: '{}'.", directory);
+        return directory;
     }
 
     private String determineFileName(String absolutePath) {
@@ -135,6 +137,18 @@ public class DocumentService {
 
     public void createDirectory(String newDirectory) {
         updateDirectoryStructure(newDirectory);
+    }
+
+    public ResponseEntity<byte[]> fetchFile(String fileAbsolutePath) {
+        String location = determineDestinationDirectory(fileAbsolutePath);
+        String fileName = determineFileName(fileAbsolutePath);
+
+        File file = fileRepository.getByNameAndLocation(fileName, location)
+                .orElseThrow(() -> new ResourceNotFoundException("File " + fileName + " not found in " + location + "."));
+
+        return ResponseEntity
+                .ok()
+                .body(file.getContents());
     }
 
 }

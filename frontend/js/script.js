@@ -209,9 +209,6 @@ function showWorkingDirFileDetails() {
 
             console.log("name: ", name);
             console.log("type: ", type);
-
-            // contents += "<hr>";
-            // contents += "<p>Name: " + name + ", type: " + type;
         }
 
         var contents = "";
@@ -228,10 +225,7 @@ function showWorkingDirFileDetails() {
 
         for (var i = 0; i < fileDetails.length; i++) {
             contents += "<hr>";
-            var fileName = fileDetails[i].name;
-            console.log("file name: ", fileName);
-
-            var fileNode = populateFileTemplate(fileName);
+            var fileNode = populateFileTemplate(fileDetails[i]);
             console.log("File node: ", fileNode);
             contents += fileNode;
         }
@@ -251,9 +245,11 @@ function populateDirectoryTemplate(directoryName) {
         "</div>";
 }
 
-function populateFileTemplate(fileName) {
-    return "<div>" +
-            "<p>" + fileName + "</p>" +
+function populateFileTemplate(file) {
+    console.log("file name: ", file.name);
+    var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + file.name;
+    return "<div onclick=\"$dc.viewFile('" + absolutePath + "')\">" +
+            "<p>" + file.name + "</p>" +
         "</div>";
 }
 
@@ -399,8 +395,13 @@ dc.createDirectory = function() {
     var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + newDirectory;
     formData.set('directory', absolutePath);
 
-    request.open("POST", createDirectoryUrl);
+    request.open("POST", encodeURI(createDirectoryUrl));
     request.send(formData);
+}
+
+dc.viewFile = function(absolutePath) {
+    var preview = document.getElementById('preview-image');
+    preview.src = encodeURI(getFileUrl + "?file=" + absolutePath);
 }
 
 dc.changeDirectory = changeDirectory;
