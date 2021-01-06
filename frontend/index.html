@@ -73,11 +73,9 @@
         <p></p>
       </div>
 
-      <h3>Create Directory</h3>
-      <button onclick="$dc.createDirectory()">Create Directory</button>
+      <button style="display:none" onclick="$dc.createDirectory()">Create Directory</button>
 
-      <h3>Upload Directory</h3>
-      <div>
+      <div style="display:none">
           <input type="file" id="directory-picker" name="fileList" webkitdirectory multiple>
       </div>
 
@@ -87,8 +85,7 @@
           <img id="loader" src="images/loader.gif">
       </div>
 
-      <h3>Upload Files</h3>
-      <div>
+      <div style="display:none">
           <input type="file" id="file-picker" name="files" multiple>
       </div>
 
