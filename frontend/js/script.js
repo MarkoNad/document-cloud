@@ -23,7 +23,6 @@ $(function () { // Same as document.addEventListener("DOMContentLoaded"...
 
 var dc = {};
 
-var homeHtml = "snippets/home-snippet.html";
 var directoryHtml = "snippets/directory-snippet.html";
 
 // Convenience function for inserting innerHTML for 'select'
@@ -38,44 +37,6 @@ var showLoading = function (selector) {
   html += "<img src='images/ajax-loader.gif'></div>";
   insertHtml(selector, html);
 };
-
-// Return substitute of '{{propName}}'
-// with propValue in given 'string'
-var insertProperty = function (string, propName, propValue) {
-  var propToReplace = "{{" + propName + "}}";
-  string = string
-    .replace(new RegExp(propToReplace, "g"), propValue);
-  return string;
-}
-
-// Remove the class 'active' from home and switch to Menu button
-var switchMenuToActive = function () {
-  // Remove 'active' from home button
-  var classes = document.querySelector("#navHomeButton").className;
-  classes = classes.replace(new RegExp("active", "g"), "");
-  document.querySelector("#navHomeButton").className = classes;
-
-  // Add 'active' to menu button if not already there
-  classes = document.querySelector("#navMenuButton").className;
-  if (classes.indexOf("active") == -1) {
-    classes += " active";
-    document.querySelector("#navMenuButton").className = classes;
-  }
-};
-
-// On page load (before images or CSS)
-document.addEventListener("DOMContentLoaded", function (event) {
-
-// On first load, show home view
-showLoading("#main-content");
-$ajaxUtils.sendGetRequest(
-  homeHtml,
-  function (responseText) {
-    document.querySelector("#main-content").innerHTML = responseText;
-    // addUploadListener();
-  },
-  false);
-});
 
 function addUploadListener() {
   const form = document.querySelector('#uploadForm');
@@ -257,6 +218,10 @@ let filesUploaded = 0;
 
 let directoryPicker = document.getElementById('directory-picker');
 directoryPicker.addEventListener('change', e => {
+    uploadDirectory();
+});
+
+function uploadDirectory() {
     showProgressTile();
 
     let total = directoryPicker.files.length;
@@ -268,10 +233,14 @@ directoryPicker.addEventListener('change', e => {
         var file = directoryPicker.files[i];
         sendFile(file, total);
     }
-});
+}
 
 let filePicker = document.getElementById('file-picker');
 filePicker.addEventListener('change', e => {
+    uploadFiles();
+});
+
+function uploadFiles() {
     showProgressTile();
 
     let total = filePicker.files.length;
@@ -283,7 +252,7 @@ filePicker.addEventListener('change', e => {
         var file = filePicker.files[i];
         sendFile(file, total);
     }
-});
+}
 
 function showProgressTile() {
     let progressTile = document.getElementById("progress-tile");
@@ -423,7 +392,8 @@ function getFileExtension(absolutePath) {
 }
 
 dc.changeDirectory = changeDirectory;
-
+dc.uploadDirectory = uploadDirectory;
+dc.uploadFiles = uploadFiles;
 
 global.$dc = dc;
 
