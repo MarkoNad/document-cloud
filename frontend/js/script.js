@@ -124,7 +124,7 @@ function showPath(path) {
     var absolutePath = "";
     for (var i = 0; i < directories.length; i++) {
         if (i != 0) {
-            contents += " > ";
+            contents += "<span> > </span>";
             absolutePath += DIRECTORY_DELIMITER;
         }
 
