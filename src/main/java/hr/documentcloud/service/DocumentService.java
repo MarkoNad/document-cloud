@@ -5,23 +5,18 @@ import hr.documentcloud.dal.DirectoryStructureRepository;
 import hr.documentcloud.dal.File;
 import hr.documentcloud.dal.FileRepository;
 import hr.documentcloud.dal.util.LobHelper;
-import hr.documentcloud.exception.FileFetchingException;
 import hr.documentcloud.exception.FileStoringException;
 import hr.documentcloud.exception.ResourceNotFoundException;
 import hr.documentcloud.exception.ZipGenerationException;
 import hr.documentcloud.model.DirectoryStructure;
 import hr.documentcloud.model.DocumentDto;
 import lombok.extern.log4j.Log4j2;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
-import javax.transaction.Transactional;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
@@ -144,45 +139,18 @@ public class DocumentService {
         updateDirectoryStructure(newDirectory);
     }
 
-//    @Transactional // todo
-//    public InputStreamResource fetchFileStream(String fileAbsolutePath) {
-//        try {
-//            return fetchFileStreamPrivate(fileAbsolutePath);
-//        } catch (SQLException e) {
-//            throw new FileFetchingException("Failed to fetch file " + fileAbsolutePath, e);
-//        } catch (Exception e) {
-//            throw new FileFetchingException(e);
-//        }
-//    }
-
-    @Transactional // todo
-//    private InputStreamResource fetchFileStreamPrivate(String fileAbsolutePath) throws SQLException {
-    public InputStream fetchFileStream(String fileAbsolutePath) throws SQLException {
+    public void writeFileToStream(String fileAbsolutePath, OutputStream outputStream) throws SQLException, IOException {
         String location = determineDestinationDirectory(fileAbsolutePath);
         String fileName = determineFileName(fileAbsolutePath);
 
         File file = fileRepository.getByNameAndLocation(fileName, location)
                 .orElseThrow(() -> new ResourceNotFoundException("File " + fileName + " not found in " + location + "."));
 
-//        file = fileRepository.merge(file);
-
         Blob blob = file.getContents();
-
-        final InputStream stream = blob.getBinaryStream();
-        final long size = blob.length();
-
-        return stream;
-
-//        return new InputStreamResource(stream) {
-//            @Override
-//            public long contentLength() {
-//                return size;
-//            }
-//        };
+        lobHelper.writeBlobToOutputStream(blob, outputStream);
     }
 
-//    @Transactional // todo
-    public void writeZipToStream(List<String> filePaths, ServletOutputStream outputStream) {
+    public void writeZipToStream(List<String> filePaths, OutputStream outputStream) {
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);) {
             for (String path : filePaths) {
                 log.info("Adding file '{}' to .zip.", path);
@@ -190,21 +158,14 @@ public class DocumentService {
                 String location = determineDestinationDirectory(path);
 
                 Optional<File> maybeFile = fileRepository.getByNameAndLocation(fileName, location);
-
                 if (!maybeFile.isPresent()) {
                     log.warn("File '{}' not found; will not add it to archive.", path);
                     continue;
                 }
 
-                zipOutputStream.putNextEntry(new ZipEntry(fileName));
-
                 File file = maybeFile.get();
-                lobHelper.writeBlobToOutputStream(file.getContents(), zipOutputStream);
-//                InputStream blobInputStream = file.getContents().getBinaryStream();
-//                IOUtils.copy(blobInputStream, zipOutputStream);
-//
-//                blobInputStream.close();
-                zipOutputStream.closeEntry();
+
+                addToZip(zipOutputStream, fileName, file);
             }
         } catch (IOException | SQLException e) {
             throw new ZipGenerationException("Failed to generate .zip.", e);
@@ -213,5 +174,11 @@ public class DocumentService {
         }
 
         log.info("Added all files.");
+    }
+
+    private void addToZip(ZipOutputStream zipOutputStream, String fileName, File file) throws IOException, SQLException {
+        zipOutputStream.putNextEntry(new ZipEntry(fileName));
+        lobHelper.writeBlobToOutputStream(file.getContents(), zipOutputStream);
+        zipOutputStream.closeEntry();
     }
 }
