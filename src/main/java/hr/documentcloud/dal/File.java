@@ -3,6 +3,7 @@ package hr.documentcloud.dal;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.sql.Blob;
 
 @Entity
 @Table(name = "file",
@@ -23,14 +24,15 @@ public class File {
     @Column(name = "path")
     private String path;
 
+    @Lob
     @Column(name = "contents")
-    private byte[] contents;
+    private Blob contents;
 
     private File() {
         // no-arg ctor for Hibernate
     }
 
-    public File(String name, String path, byte[] contents) {
+    public File(String name, String path, Blob contents) {
         this.name = name;
         this.path = path;
         this.contents = contents;
