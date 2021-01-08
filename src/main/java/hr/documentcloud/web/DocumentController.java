@@ -74,10 +74,25 @@ public class DocumentController {
         log.info("Received request to create a .zip with files {}.", filePaths);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.addHeader("Content-Disposition", "attachment; filename=\"test.zip\"");
+        response.addHeader("Content-Disposition", "attachment; filename=\"files.zip\"");
 
         try {
-            documentService.writeZipToStream(filePaths, response.getOutputStream());
+            documentService.writeFilesZipToStream(filePaths, response.getOutputStream());
+        } catch(Exception e) {
+            log.error("Error occurred: ", e);
+            // TODO: handle
+        }
+    }
+
+    @GetMapping(value="get-directory", produces="application/zip")
+    public void getDirectory(@RequestParam("directory") String directory, HttpServletResponse response) {
+        log.info("Received request to create a .zip of directory {}.", directory);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.addHeader("Content-Disposition", "attachment; filename=\"" + directory + ".zip\"");
+
+        try {
+            documentService.writeDirectoryZipToStream(directory, response.getOutputStream());
         } catch(Exception e) {
             log.error("Error occurred: ", e);
             // TODO: handle

@@ -52,9 +52,7 @@ public class DirectoryStructure implements Serializable {
 
         String childName = parts.get(0);
 
-        Optional<DirectoryStructure> maybeExistingChild = children.stream()
-                .filter(c -> c.getDirectoryName().equals(childName))
-                .findFirst();
+        Optional<DirectoryStructure> maybeExistingChild = findChild(childName);
 
         DirectoryStructure child;
         if (maybeExistingChild.isPresent()) {
@@ -110,9 +108,7 @@ public class DirectoryStructure implements Serializable {
 
         String childName = parts.get(0);
 
-        Optional<DirectoryStructure> maybeChild = children.stream()
-                .filter(c -> c.getDirectoryName().equals(childName))
-                .findFirst();
+        Optional<DirectoryStructure> maybeChild = findChild(childName);
 
         if (!maybeChild.isPresent()) {
             // no such directory
@@ -121,6 +117,43 @@ public class DirectoryStructure implements Serializable {
 
         String pathStartingWithChild = String.join(directoryDelimiter, parts);
         return maybeChild.get().getSubfolderNames(pathStartingWithChild);
+    }
+
+    public Optional<DirectoryStructure> find(String path) {
+        List<String> parts = new LinkedList<>(Arrays.asList(path.split(directoryDelimiter)));
+
+        if (!parts.get(0).equals(directoryName)) {
+            // no such directory
+            return Optional.empty();
+        }
+
+        parts.remove(0);
+
+        if (parts.isEmpty()) {
+            return Optional.of(this);
+        }
+
+        String childName = parts.get(0);
+
+        Optional<DirectoryStructure> maybeChild = findChild(childName);
+
+        if (!maybeChild.isPresent()) {
+            // no such directory
+            return Optional.empty();
+        }
+
+        if (parts.size() == 1) {
+            return maybeChild;
+        }
+
+        String pathStartingWithChild = String.join(directoryDelimiter, parts);
+        return maybeChild.get().find(pathStartingWithChild);
+    }
+
+    private Optional<DirectoryStructure> findChild(String childName) {
+        return children.stream()
+                .filter(c -> c.getDirectoryName().equals(childName))
+                .findFirst();
     }
 
 }

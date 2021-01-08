@@ -40,4 +40,20 @@ public class DirectoryStructureContainerDtoTest {
         assertTrue(directoryStructure.getSubfolderNames("home/a/b/bb").contains("dd"));
     }
 
+    @Test
+    public void testFind() {
+        DirectoryStructure directoryStructure = DirectoryStructure.fromPath("home/a/b/c/c/d/a");
+
+        directoryStructure.updateStructure("home/a/b/c/c");
+        directoryStructure.updateStructure("home/a/b/c/c/");
+        directoryStructure.updateStructure("home/a/b/bb/dd");
+
+        System.out.println(directoryStructure.find("home"));
+        System.out.println(directoryStructure.find("home/a"));
+        System.out.println(directoryStructure.find("home/a/b"));
+        System.out.println(directoryStructure.find("home/a/b/bb"));
+        System.out.println(directoryStructure.find("home/a/b/bb/dd"));
+        System.out.println(directoryStructure.find("home/a/b/x"));
+    }
+
 }

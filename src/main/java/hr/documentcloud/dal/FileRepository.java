@@ -19,6 +19,12 @@ public class FileRepository extends AbstractRepository<File> {
                 .fetch();
     }
 
+    public List<File> fetchFilesFromDirectoryRecursively(String directory) {
+        return new JPAQuery<File>(em).from(file)
+                .where(file.path.startsWith(directory))
+                .fetch();
+    }
+
     public Optional<File> getByNameAndLocation(String fileName, String directory) {
         log.info("Fetching file '{}' from '{}'.", fileName, directory);
         Optional<File> maybeFile = Optional.ofNullable(

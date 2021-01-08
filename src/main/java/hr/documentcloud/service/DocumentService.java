@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Blob;
@@ -36,6 +37,7 @@ public class DocumentService {
     private final FileRepository fileRepository;
     private final DirectoryStructureRepository directoryStructureRepository;
     private final LobHelper lobHelper;
+    private static final String ZIP_DIRECTORY_DELIMITER = "/";
 
     @Autowired
     public DocumentService(
@@ -150,8 +152,8 @@ public class DocumentService {
         lobHelper.writeBlobToOutputStream(blob, outputStream);
     }
 
-    public void writeZipToStream(List<String> filePaths, OutputStream outputStream) {
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);) {
+    public void writeFilesZipToStream(List<String> filePaths, OutputStream outputStream) {
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
             for (String path : filePaths) {
                 log.info("Adding file '{}' to .zip.", path);
                 String fileName = determineFileName(path);
@@ -181,4 +183,71 @@ public class DocumentService {
         lobHelper.writeBlobToOutputStream(file.getContents(), zipOutputStream);
         zipOutputStream.closeEntry();
     }
+
+    public void writeDirectoryZipToStream(String directory, ServletOutputStream outputStream) {
+        DirectoryStructure directoryStructure = directoryStructureRepository.get()
+                .orElseThrow(() -> new ResourceNotFoundException("Directory structure is not defined; can't find directory '" + directory + "'."))
+                .getDirectoryStructure();
+
+        DirectoryStructure requiredDir = directoryStructure.find(directory)
+                .orElseThrow(() -> new ResourceNotFoundException("Directory '" + directory + "' not found."));
+
+        List<File> files = fileRepository.fetchFilesFromDirectoryRecursively(directory);
+
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+            for (File file : files) {
+                String absolutePath = file.getPath() + DEFAULT_DIRECTORY_DELIMITER + file.getName();
+                log.info("Adding file '{}' to .zip.", absolutePath);
+                addToZip(zipOutputStream, absolutePath, file);
+            }
+        } catch (IOException | SQLException e) {
+            throw new ZipGenerationException("Failed to generate .zip.", e);
+        } catch (Exception e) {
+            throw new ZipGenerationException(e);
+        }
+
+        log.info("Added all files.");
+    }
+
+//    public void writeDirectoryZipToStream(String directory, ServletOutputStream outputStream) {
+//        DirectoryStructure directoryStructure = directoryStructureRepository.get()
+//                .orElseThrow(() -> new ResourceNotFoundException("Directory structure is not defined; can't find directory '" + directory + "'."))
+//                .getDirectoryStructure();
+//
+//        DirectoryStructure requiredDir = directoryStructure.find(directory)
+//                .orElseThrow(() -> new ResourceNotFoundException("Directory '" + directory + "' not found."));
+//
+//        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+//            ZipEntry zippedDir = new ZipEntry(requiredDir.getDirectoryName() + ZIP_DIRECTORY_DELIMITER);
+//            zipOutputStream.putNextEntry(zippedDir);
+//
+//            List<File> filesInDir = fileRepository.fetchFilesFromDirectory(dirAbsolutePath);
+//
+//            for (File file : filesInDir) {
+//                zippedDir.
+//            }
+//
+//            for (String path : filePaths) {
+//                log.info("Adding file '{}' to .zip.", path);
+//                String fileName = determineFileName(path);
+//                String location = determineDestinationDirectory(path);
+//
+//                Optional<File> maybeFile = fileRepository.getByNameAndLocation(fileName, location);
+//                if (!maybeFile.isPresent()) {
+//                    log.warn("File '{}' not found; will not add it to archive.", path);
+//                    continue;
+//                }
+//
+//                File file = maybeFile.get();
+//
+//                addToZip(zipOutputStream, fileName, file);
+//            }
+//        } catch (IOException | SQLException e) {
+//            throw new ZipGenerationException("Failed to generate .zip.", e);
+//        } catch (Exception e) {
+//            throw new ZipGenerationException(e);
+//        }
+//
+//        log.info("Added all files.");
+//    }
 }
