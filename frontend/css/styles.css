@@ -121,6 +121,22 @@ body {
     width: 48px;
 }
 
+#progress-tile {
+    margin: auto;
+    width: 50%;
+}
+
+#progress {
+    margin: auto;
+    text-align: center;
+}
+
+#loader {
+    margin: auto;
+    display: block;
+    width: 50%;
+}
+
 /********** Large devices only **********/
 @media (min-width: 1200px) {
 
@@ -208,7 +224,7 @@ body {
 
 #slide {
     max-height:100%;
-    max-width:60%;
+    max-width:100%;
     margin: auto;
     display: block;
 }

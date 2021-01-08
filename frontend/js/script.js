@@ -99,7 +99,7 @@ dc.uploadFile = function() {
 
 const DIRECTORY_DELIMITER = "/";
 
-var workingDirectory = "home";
+var workingDirectory = "Home";
 changeDirectory(workingDirectory);
 
 function changeDirectory(directory) {
