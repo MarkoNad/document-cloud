@@ -150,6 +150,8 @@ function showWorkingDirFileDetails() {
         true
     );
 
+    hidePreview();
+
     function renderWorkingDirFileDetails(detailsArray) {
         console.log("Response JSON: ", detailsArray);
 
@@ -208,6 +210,15 @@ function showWorkingDirFileDetails() {
         var contentsDiv = document.getElementById('working-directory-contents');
         contentsDiv.innerHTML = contents;
     }
+}
+
+function hidePreview() {
+    var prev = document.querySelector('#prev');
+    var next = document.querySelector('#next');
+    var slide = document.querySelector('#slide');
+    prev.style.display = "none";
+    next.style.display = "none";
+    slide.src = "";
 }
 
 function isImage(fileName) {
@@ -401,21 +412,25 @@ dc.createDirectory = function() {
 }
 
 dc.viewFile = function(absolutePath) {
-    var preview = document.getElementById('preview');
-
     var extension = getFileExtension(absolutePath);
     if (extension == null || !isImageExtension(extension)) {
-        preview.innerHTML = "<p>No preview available for " + extension + " files.</p>";
         return;
     }
 
+    showSliders();
+
     var src = encodeURI(getFileUrl + "?file=" + absolutePath);
-    var imageTag = "<img src='" + src + "' alt='Preview'>";
-
-//    preview.innerHTML = imageTag;
-
     var slide = document.querySelector('#slide');
     slide.src = src;
+
+    slide.scrollIntoView();
+}
+
+function showSliders() {
+    var prev = document.querySelector('#prev');
+    var next = document.querySelector('#next');
+    prev.style.display = "block";
+    next.style.display = "block";
 }
 
 dc.nextSlide = function() {
