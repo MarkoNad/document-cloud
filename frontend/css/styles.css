@@ -73,10 +73,24 @@ body {
     color: #222;
 }
 
+#working-directory-contents div {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#working-directory-contents hr {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
 #working-directory-contents div a {
     color: #fff;
     float: right;
     text-decoration: none;
+}
+
+#working-directory-contents div:hover {
+    background-color: #121212;
 }
 
 #working-directory-contents div a:hover {
