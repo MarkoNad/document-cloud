@@ -334,8 +334,10 @@ sendFile = function sendfile(file, total) {
     var path = getWorkingDirectory() + DIRECTORY_DELIMITER + relativePath;
     formData.set('file', file);
     formData.set('absolute-path', path);
+    formData.set('last-modified', file.lastModified);
 
     console.log("path: " , path);
+    console.log("modified: " + file.lastModified);
 
     request.open("POST", fileUploadUrl);
     request.send(formData);

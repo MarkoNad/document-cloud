@@ -4,10 +4,12 @@ import hr.documentcloud.model.DocumentDto;
 import hr.documentcloud.service.DocumentService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
@@ -24,10 +26,14 @@ public class DocumentController {
     }
 
     @PostMapping("upload-file")
-    public void receiveFile(@RequestParam("file") MultipartFile file, @RequestParam("absolute-path") String absolutePath) {
-        log.info("Received request to store file '{}' to {}.", file, absolutePath);
+    public void receiveFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("absolute-path") String absolutePath,
+            @RequestParam("last-modified") Long lastModifiedMilliseconds) {
+
+        log.info("Received request to store file '{}' with last modified date {} to {}.", file, lastModifiedMilliseconds, absolutePath);
         try {
-            documentService.storeFile(file, absolutePath);
+            documentService.storeFile(file, absolutePath, lastModifiedMilliseconds);
         } catch(Exception e) {
             log.error("Error occurred: ", e);
             throw e;

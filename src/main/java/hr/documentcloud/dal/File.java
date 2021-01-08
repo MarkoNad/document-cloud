@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Blob;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "file",
@@ -24,6 +25,9 @@ public class File {
     @Column(name = "path")
     private String path;
 
+    @Column(name = "last_modified")
+    private LocalDateTime lastModified;
+
     @Lob
     @Column(name = "contents")
     private Blob contents;
@@ -32,9 +36,10 @@ public class File {
         // no-arg ctor for Hibernate
     }
 
-    public File(String name, String path, Blob contents) {
+    public File(String name, String path, LocalDateTime lastModified, Blob contents) {
         this.name = name;
         this.path = path;
+        this.lastModified = lastModified;
         this.contents = contents;
     }
 

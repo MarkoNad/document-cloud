@@ -20,8 +20,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -49,20 +52,20 @@ public class DocumentService {
         this.lobHelper = lobHelper;
     }
 
-    public void storeFile(MultipartFile file, String absolutePath) {
+    public void storeFile(MultipartFile file, String absolutePath, Long lastModifiedMilliseconds) {
         try {
-            storeFilePrivate(file, absolutePath);
+            storeFilePrivate(file, absolutePath, lastModifiedMilliseconds);
         } catch (Exception e) {
             throw new FileStoringException(e);
         }
     }
 
-    private void storeFilePrivate(MultipartFile multipartFile, String absolutePath) throws IOException {
+    private void storeFilePrivate(MultipartFile multipartFile, String absolutePath, Long lastModifiedMilliseconds) throws IOException {
         String destinationDirectory = determineDestinationDirectory(absolutePath);
         updateDirectoryStructure(destinationDirectory);
 
         String fileName = determineFileName(absolutePath);
-        persistFile(multipartFile, fileName, destinationDirectory);
+        persistFile(multipartFile, fileName, destinationDirectory, lastModifiedMilliseconds);
     }
 
     private void updateDirectoryStructure(String destinationDirectory) {
@@ -108,7 +111,7 @@ public class DocumentService {
         return fileName;
     }
 
-    private void persistFile(MultipartFile multipartFile, String fileName, String destinationDirectory) throws IOException {
+    private void persistFile(MultipartFile multipartFile, String fileName, String destinationDirectory, Long lastModifiedMilliseconds) throws IOException {
         Blob newContents = lobHelper.createBlob(multipartFile.getInputStream(), multipartFile.getSize());
 
         Optional<File> maybeFile = fileRepository.getByNameAndLocation(fileName, destinationDirectory);
@@ -121,7 +124,12 @@ public class DocumentService {
             return;
         }
 
-        File file = new File(fileName, destinationDirectory, newContents);
+        LocalDateTime lastModified = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(lastModifiedMilliseconds),
+                TimeZone.getDefault().toZoneId()
+        );
+
+        File file = new File(fileName, destinationDirectory, lastModified, newContents);
         fileRepository.persist(file);
     }
 

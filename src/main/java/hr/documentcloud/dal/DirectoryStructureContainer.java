@@ -17,7 +17,7 @@ public class DirectoryStructureContainer {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "structureBytes")
+    @Column(name = "structure_bytes")
     private byte[] structureBytes;
 
     private DirectoryStructureContainer() {
