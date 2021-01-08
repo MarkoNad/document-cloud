@@ -42,15 +42,18 @@ public class DocumentService {
     private final FileRepository fileRepository;
     private final DirectoryStructureRepository directoryStructureRepository;
     private final LobHelper lobHelper;
+    private final DirectoryStructureUpdater directoryStructureUpdater;
 
     @Autowired
     public DocumentService(
             FileRepository fileRepository,
             DirectoryStructureRepository directoryStructureRepository,
-            LobHelper lobHelper) {
+            LobHelper lobHelper,
+            DirectoryStructureUpdater directoryStructureUpdater) {
         this.fileRepository = fileRepository;
         this.directoryStructureRepository = directoryStructureRepository;
         this.lobHelper = lobHelper;
+        this.directoryStructureUpdater = directoryStructureUpdater;
     }
 
     public void storeFile(MultipartFile file, String absolutePath, Long lastModifiedMilliseconds) {
@@ -63,30 +66,10 @@ public class DocumentService {
 
     private void storeFilePrivate(MultipartFile multipartFile, String absolutePath, Long lastModifiedMilliseconds) throws IOException {
         String destinationDirectory = determineDestinationDirectory(absolutePath);
-        updateDirectoryStructure(destinationDirectory);
+        directoryStructureUpdater.updateDirectoryStructure(destinationDirectory);
 
         String fileName = determineFileName(absolutePath);
         persistFile(multipartFile, fileName, destinationDirectory, lastModifiedMilliseconds);
-    }
-
-    private void updateDirectoryStructure(String destinationDirectory) {
-        log.info("Updating directory structure with destination directory '{}'.", destinationDirectory);
-
-        Optional<DirectoryStructureContainer> maybeContainer = directoryStructureRepository.get();
-
-        if (maybeContainer.isPresent()) {
-            DirectoryStructureContainer container = maybeContainer.get();
-            DirectoryStructure structure = container.getDirectoryStructure();
-            structure.updateStructure(destinationDirectory);
-            container.update(structure);
-            log.info("Updating existing directory structure.");
-            directoryStructureRepository.merge(container);
-        } else {
-            DirectoryStructure structure = DirectoryStructure.fromPath(destinationDirectory);
-            DirectoryStructureContainer container = new DirectoryStructureContainer(structure);
-            log.info("Inserting new directory structure.");
-            directoryStructureRepository.persist(container);
-        }
     }
 
     private String determineDestinationDirectory(String fileAbsolutePath) {
@@ -160,7 +143,7 @@ public class DocumentService {
     }
 
     public void createDirectory(String newDirectory) {
-        updateDirectoryStructure(newDirectory);
+        directoryStructureUpdater.updateDirectoryStructure(newDirectory);
     }
 
     public void writeFileToStream(String fileAbsolutePath, OutputStream outputStream) {
