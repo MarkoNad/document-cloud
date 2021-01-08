@@ -89,7 +89,7 @@ public class DocumentService {
         return directory;
     }
 
-    private String determineFileName(String absolutePath) {
+    public String determineFileName(String absolutePath) {
         log.info("Calculating file name from absolute path: '{}'.", absolutePath);
         String fileName = absolutePath.substring(1 + absolutePath.lastIndexOf(DEFAULT_DIRECTORY_DELIMITER));
         log.info("Calculated file name: '{}'.", fileName);

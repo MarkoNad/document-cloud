@@ -71,9 +71,18 @@ body {
 #working-directory a:hover {
     background-color: #fff;
     color: #222;
-    /*background-color: #4d79ff;*/
 }
 
+#working-directory-contents div a {
+    color: #fff;
+    float: right;
+    text-decoration: none;
+}
+
+#working-directory-contents div a:hover {
+    background-color: #fff;
+    color: #222;
+}
 
 /********** Large devices only **********/
 @media (min-width: 1200px) {

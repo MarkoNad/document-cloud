@@ -57,11 +57,12 @@ public class DocumentController {
     }
 
     @GetMapping(value = "get-file")
-    public void getFile(@RequestParam("file") String file, HttpServletResponse response) {
-        log.info("Received request to fetch file '{}'.", file);
+    public void getFile(@RequestParam("file") String fileAbsolutePath, HttpServletResponse response) {
+        log.info("Received request to fetch file '{}'.", fileAbsolutePath);
         try {
-            response.addHeader(CONTENT_DISPOSITION, "attachment; filename=\"a.txt\""); // TODO
-            documentService.writeFileToStream(file, response.getOutputStream());
+            String fileName = documentService.determineFileName(fileAbsolutePath);
+            response.addHeader(CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+            documentService.writeFileToStream(fileAbsolutePath, response.getOutputStream());
         } catch(Exception e) {
             log.error("Error occurred: ", e);
 //            throw e; // todo

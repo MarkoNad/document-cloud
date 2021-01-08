@@ -209,8 +209,11 @@ function populateDirectoryTemplate(directoryName) {
 function populateFileTemplate(file) {
     console.log("file name: ", file.name);
     var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + file.name;
+    var downloadUrl = encodeURI(getFileUrl + "?file=" + absolutePath);
+
     return "<div onclick=\"$dc.viewFile('" + absolutePath + "')\">" +
-            "<p>" + file.name + "</p>" +
+            "<span>" + file.name + "</span>" +
+            "<a class=\"material-icons\" href=\"" + downloadUrl + "\">download</a>" +
         "</div>";
 }
 
