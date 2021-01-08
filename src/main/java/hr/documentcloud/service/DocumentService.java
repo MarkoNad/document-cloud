@@ -22,6 +22,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -137,6 +138,7 @@ public class DocumentService {
         log.info("Fetching files from directory '{}'.", directory);
         List<File> files = fileRepository.fetchFilesFromDirectory(directory);
         List<DocumentDto> dtos = files.stream()
+                .sorted(Comparator.comparing(File::getLastModified))
                 .map(d -> new DocumentDto(d.getName(), FILE))
                 .collect(Collectors.toList());
         log.info("Got file DTOs: {}", dtos);
@@ -150,6 +152,8 @@ public class DocumentService {
 
         DirectoryStructure structure = maybeContainer.get().getDirectoryStructure();
         structure.getSubfolderNames(directory)
+                .stream()
+                .sorted(String::compareTo)
                 .forEach(subfolder -> dtos.add(new DocumentDto(subfolder, DIRECTORY)));
 
         return dtos;
