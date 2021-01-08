@@ -1,24 +1,3 @@
-$(function () { // Same as document.addEventListener("DOMContentLoaded"...
-
-  // Same as document.querySelector("#navbarToggle").addEventListener("blur",...
-  $("#navbarToggle").blur(function (event) {
-    var screenWidth = window.innerWidth;
-    if (screenWidth < 768) {
-      $("#collapsable-nav").collapse('hide');
-    }
-  });
-
-  // In Firefox and Safari, the click event doesn't retain the focus
-  // on the clicked button. Therefore, the blur event will not fire on
-  // user clicking somewhere else in the page and the blur event handler
-  // which is set up above will not be called.
-  // Refer to issue #28 in the repo.
-  // Solution: force focus on the element that the click event fired on
-  $("#navbarToggle").click(function (event) {
-    $(event.target).focus();
-  });
-});
-
 (function (global) {
 
 var dc = {};
@@ -41,9 +20,7 @@ var showLoading = function (selector) {
 function addUploadListener() {
   const form = document.querySelector('#uploadForm');
 
-  console.log("Adding event listener to upload form: ", form);
   form.addEventListener('submit', (e) => {
-    console.log("Submitting.");
     e.preventDefault()
 
     const files = document.querySelector('#filesInput').files
@@ -51,51 +28,16 @@ function addUploadListener() {
 
     for (let i = 0; i < files.length; i++) {
       let file = files[i]
-      console.log("file " + i + ": " + file);
 
       formData.append('files', file)
-      // formData.append(file.name, file);
     }
 
     fetch(fileUploadUrl, {
       method: 'POST',
       body: formData,
-    }).then((response) => {
-      console.log(response)
-    })
+    });
   });
 }
-
-
-
-
-
-
-
-
-dc.uploadFile = function() {
-  console.log("Uploading file.");
-
-  // $ajaxUtils.sendGetRequest(
-  //   fileUploadUrl,
-  //   buildAndShowCategoriesHTML
-  // );
-
-  // console.log("Uploaded.");
-
-  let customFileForm = document.getElementById("customFile")
-  let file = document.getElementById("customFile").files[0];
-  console.log("Custom file form: ", customFileForm);
-  let formData = new FormData();
-
-  console.log("file: " + file);
-
-  formData.append("file", file);
-  fetch(fileUploadUrl, {method: "POST", body: formData});
-};
-
-
-
 
 const DIRECTORY_DELIMITER = "/";
 
@@ -109,7 +51,6 @@ function changeDirectory(directory) {
 }
 
 function setWorkingDirectory(path) {
-    console.log("Setting workingDirectory to: ", path);
     localStorage.setItem('workingDirectory', path);
 }
 
@@ -139,10 +80,7 @@ function showPath(path) {
 }
 
 function showWorkingDirFileDetails() {
-    console.log("Fetching working directory details.");
-
     var workingDirectory = getWorkingDirectory();
-    console.log("Working directory: ", workingDirectory);
 
     $ajaxUtils.sendGetRequest(
         encodeURI(detailsUrl + "?directory=" + workingDirectory),
@@ -153,8 +91,6 @@ function showWorkingDirFileDetails() {
     hidePreview();
 
     function renderWorkingDirFileDetails(detailsArray) {
-        console.log("Response JSON: ", detailsArray);
-
         var fileDetails = [];
         var directoryDetails = [];
 
@@ -169,9 +105,6 @@ function showWorkingDirFileDetails() {
             } else if (type == "FILE") {
                 fileDetails.push(details);
             }
-
-            console.log("name: ", name);
-            console.log("type: ", type);
         }
 
         var contents = "";
@@ -179,10 +112,8 @@ function showWorkingDirFileDetails() {
         for (var i = 0; i < directoryDetails.length; i++) {
             contents += "<hr>";
             var directoryName = directoryDetails[i].name;
-            console.log("directory name: ", directoryName);
 
             var directoryNode = populateDirectoryTemplate(directoryName);
-            console.log("Directory node: ", directoryNode);
             contents += directoryNode;
         }
 
@@ -199,11 +130,8 @@ function showWorkingDirFileDetails() {
             contents += "<hr>";
 
             var fileNode = populateFileTemplate(file);
-            console.log("File node: ", fileNode);
             contents += fileNode;
         }
-
-        console.log("Images: ", dc.images);
 
         contents += "<hr>";
 
@@ -244,7 +172,6 @@ function populateDirectoryTemplate(directoryName) {
 }
 
 function populateFileTemplate(file) {
-    console.log("file name: ", file.name);
     var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + file.name;
     var downloadUrl = encodeURI(getFileUrl + "?file=" + absolutePath);
 
@@ -367,12 +294,10 @@ sendFile = function sendfile(file, total) {
     var formData = new FormData();
     var relativePath = file.webkitRelativePath ? file.webkitRelativePath : file.name;
     var path = getWorkingDirectory() + DIRECTORY_DELIMITER + relativePath;
+
     formData.set('file', file);
     formData.set('absolute-path', path);
     formData.set('last-modified', file.lastModified);
-
-    console.log("path: " , path);
-    console.log("modified: " + file.lastModified);
 
     request.open("POST", fileUploadUrl);
     request.send(formData);
@@ -450,7 +375,6 @@ function incrementSlidePointer(count) {
         nextIndex += dc.images.length;
     }
     var nextImageUrl = dc.images[nextIndex];
-    console.log("Viewing next image: ", nextImageUrl);
     slide.src = nextImageUrl;
 }
 
