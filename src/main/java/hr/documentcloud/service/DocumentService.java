@@ -42,7 +42,6 @@ public class DocumentService {
     private final FileRepository fileRepository;
     private final DirectoryStructureRepository directoryStructureRepository;
     private final LobHelper lobHelper;
-    private static final String ZIP_DIRECTORY_DELIMITER = "/";
 
     @Autowired
     public DocumentService(
