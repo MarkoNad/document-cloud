@@ -236,7 +236,7 @@ function isImageExtension(extension) {
 function populateDirectoryTemplate(directoryName) {
     var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + directoryName;
     var downloadUrl = encodeURI(getDirectoryUrl + "?directory=" + absolutePath);
-    return "<div onclick=\"$dc.changeDirectory('" + absolutePath + "')\">" +
+    return "<div ondblclick=\"$dc.changeDirectory('" + absolutePath + "')\">" +
             "<i class=\"material-icons\">folder2</i>" +
             "<span>" + directoryName + "</span>" +
             "<a class=\"material-icons\" href=\"" + downloadUrl + "\">download</a>" +
@@ -248,7 +248,7 @@ function populateFileTemplate(file) {
     var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + file.name;
     var downloadUrl = encodeURI(getFileUrl + "?file=" + absolutePath);
 
-    return "<div onclick=\"$dc.viewFile('" + absolutePath + "')\">" +
+    return "<div ondblclick=\"$dc.viewFile('" + absolutePath + "')\">" +
             "<span class=\"glyphicon glyphicon-file\"></span>" +
             "<span>" + file.name + "</span>" +
             "<a class=\"material-icons\" href=\"" + downloadUrl + "\">download</a>" +
