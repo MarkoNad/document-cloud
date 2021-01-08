@@ -214,6 +214,7 @@ function populateFileTemplate(file) {
     var downloadUrl = encodeURI(getFileUrl + "?file=" + absolutePath);
 
     return "<div onclick=\"$dc.viewFile('" + absolutePath + "')\">" +
+            "<span class=\"glyphicon glyphicon-file\"></span>" +
             "<span>" + file.name + "</span>" +
             "<a class=\"material-icons\" href=\"" + downloadUrl + "\">download</a>" +
         "</div>";

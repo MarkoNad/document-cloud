@@ -66,10 +66,6 @@
 
       <h2>Contents</h2>
       <div id="working-directory-contents">
-        <div onclick="$dc.viewFile('home/x/smallfolder/a.txt')">
-          <span>a.txt</span>
-          <a class="material-icons" href="https://document-cloud.hr/documentcloud/get-file?file=home/x/smallfolder/a.txt">download</a>
-        </div>
       </div>
 
       <div id="dialog" title="Basic dialog">
@@ -91,18 +87,6 @@
       <div style="display:none">
           <input type="file" id="file-picker" name="files" multiple>
       </div>
-
-<!--      <a href="https://document-cloud.hr/documentcloud/get-file?file=home/2014-10-03 22.01.17.jpg" download="fileNamee">Download link</a>-->
-      <a href="https://document-cloud.hr/documentcloud/get-file?file=home/2014-10-03 22.01.17.jpg" download>Download link</a>
-<!--      <a href="https://document-cloud.hr/documentcloud/get-file?file=home/x/smallfolder/a.txt" download>Download link</a>-->
-      <a href="https://document-cloud.hr/documentcloud/get-file?file=home/x/smallfolder/a.txt">Download link</a>
-      <a href="https://document-cloud.hr/documentcloud/get-directory?directory=home/folder">Download folder</a>
-
-      <select name="download" onChange="$dc.download(this.value)">
-        <option>Select document</option>
-        <option value="home/2014-10-03%2022.01.17.jpg">A PDF document</option>
-        <option value="home/x/smallfolder/a.txt">Another PDF document</option>
-      </select>
 
       <div id="preview">
       </div>
