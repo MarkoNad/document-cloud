@@ -80,6 +80,10 @@ body {
 #working-directory-contents div {
     padding-top: 20px;
     padding-bottom: 20px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #working-directory-contents hr {
