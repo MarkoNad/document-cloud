@@ -88,6 +88,17 @@
           <input type="file" id="file-picker" name="files" multiple>
       </div>
 
+<!--      <a href="https://document-cloud.hr/documentcloud/get-file?file=home/2014-10-03 22.01.17.jpg" download="fileNamee">Download link</a>-->
+      <a href="https://document-cloud.hr/documentcloud/get-file?file=home/2014-10-03 22.01.17.jpg" download>Download link</a>
+<!--      <a href="https://document-cloud.hr/documentcloud/get-file?file=home/x/smallfolder/a.txt" download>Download link</a>-->
+      <a href="https://document-cloud.hr/documentcloud/get-file?file=home/x/smallfolder/a.txt">Download link</a>
+
+      <select name="download" onChange="$dc.download(this.value)">
+        <option>Select document</option>
+        <option value="home/2014-10-03%2022.01.17.jpg">A PDF document</option>
+        <option value="home/x/smallfolder/a.txt">Another PDF document</option>
+      </select>
+
       <div id="preview">
       </div>
     </div>

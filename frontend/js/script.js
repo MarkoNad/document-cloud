@@ -400,6 +400,13 @@ dc.performClick = function(elemId) {
    }
 }
 
+dc.download = function(d) {
+    if (d == 'Select document') {
+        return;
+    }
+    window.location = 'https://document-cloud.hr/documentcloud/get-file?file=' + d;
+}
+
 dc.changeDirectory = changeDirectory;
 dc.uploadDirectory = uploadDirectory;
 dc.uploadFiles = uploadFiles;

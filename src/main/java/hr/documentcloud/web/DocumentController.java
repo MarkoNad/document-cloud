@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+
 @RestController("/")
 @Log4j2
 public class DocumentController {
@@ -58,6 +60,7 @@ public class DocumentController {
     public void getFile(@RequestParam("file") String file, HttpServletResponse response) {
         log.info("Received request to fetch file '{}'.", file);
         try {
+            response.addHeader(CONTENT_DISPOSITION, "attachment; filename=\"a.txt\""); // TODO
             documentService.writeFileToStream(file, response.getOutputStream());
         } catch(Exception e) {
             log.error("Error occurred: ", e);
