@@ -1,0 +1,200 @@
+{
+	"info": {
+		"_postman_id": "29f95723-6562-4d99-bbb0-9dc8ae012cfd",
+		"name": "Document Cloud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get file",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/documentcloud/get-file?file=home/2014-10-03 22.01.17.jpg",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"documentcloud",
+						"get-file"
+					],
+					"query": [
+						{
+							"key": "file",
+							"value": "home/2014-10-03 22.01.17.jpg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get file ssl",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://document-cloud.hr/documentcloud/get-file?file=home/2014-10-03 22.01.17.jpg",
+					"protocol": "https",
+					"host": [
+						"document-cloud",
+						"hr"
+					],
+					"path": [
+						"documentcloud",
+						"get-file"
+					],
+					"query": [
+						{
+							"key": "file",
+							"value": "home/2014-10-03 22.01.17.jpg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get files",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/documentcloud/get-files?files=home/2014-10-03 22.01.17.jpg",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"documentcloud",
+						"get-files"
+					],
+					"query": [
+						{
+							"key": "files",
+							"value": "home/2014-10-03 22.01.17.jpg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get directory",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/documentcloud/get-directory?directory=home/folder",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"documentcloud",
+						"get-directory"
+					],
+					"query": [
+						{
+							"key": "directory",
+							"value": "home/folder"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "files details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/documentcloud/get-files-details?directory=home",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"documentcloud",
+						"get-files-details"
+					],
+					"query": [
+						{
+							"key": "directory",
+							"value": "home"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "files details ssl",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://document-cloud.hr/documentcloud/get-files-details?directory=home",
+					"protocol": "https",
+					"host": [
+						"document-cloud",
+						"hr"
+					],
+					"path": [
+						"documentcloud",
+						"get-files-details"
+					],
+					"query": [
+						{
+							"key": "directory",
+							"value": "home"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "absolute-path",
+							"value": "home/2014-10-03 22.01.17.jpg",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/marko/work/document-cloud/folder/2014-10-03 22.01.17.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8081/documentcloud/upload-file",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"documentcloud",
+						"upload-file"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
