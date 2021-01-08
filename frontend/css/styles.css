@@ -65,6 +65,16 @@ body {
 }
 /* END HEADER */
 
+#main-content {
+    padding: 15px 30px 15px 30px;
+}
+
+#working-directory {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: -5px;
+}
+
 #working-directory a, #working-directory span {
     color: #fff;
     font-size: 1.5em;
