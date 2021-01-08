@@ -184,18 +184,42 @@ function showWorkingDirFileDetails() {
             contents += directoryNode;
         }
 
+        dc.images = [];
+
         for (var i = 0; i < fileDetails.length; i++) {
+            var file = fileDetails[i];
+
+            if (isImage(file.name)) {
+                var downloadUrl = encodeURI(getFileUrl + "?file=" + getWorkingDirectory() + DIRECTORY_DELIMITER + file.name) ;
+                dc.images.push(downloadUrl);
+            }
+
             contents += "<hr>";
-            var fileNode = populateFileTemplate(fileDetails[i]);
+
+            var fileNode = populateFileTemplate(file);
             console.log("File node: ", fileNode);
             contents += fileNode;
         }
+
+        console.log("Images: ", dc.images);
 
         contents += "<hr>";
 
         var contentsDiv = document.getElementById('working-directory-contents');
         contentsDiv.innerHTML = contents;
     }
+}
+
+function isImage(fileName) {
+    var extension = getFileExtension(fileName);
+    if (extension == null) {
+        return false;
+    }
+    return isImageExtension(extension);
+}
+
+function isImageExtension(extension) {
+    return extension.match(/(jpg|jpeg|png|gif)$/i);
 }
 
 function populateDirectoryTemplate(directoryName) {
@@ -380,7 +404,7 @@ dc.viewFile = function(absolutePath) {
     var preview = document.getElementById('preview');
 
     var extension = getFileExtension(absolutePath);
-    if (!extension.match(/(jpg|jpeg|png|gif)$/i)) {
+    if (extension == null || !isImageExtension(extension)) {
         preview.innerHTML = "<p>No preview available for " + extension + " files.</p>";
         return;
     }
@@ -388,7 +412,31 @@ dc.viewFile = function(absolutePath) {
     var src = encodeURI(getFileUrl + "?file=" + absolutePath);
     var imageTag = "<img src='" + src + "' alt='Preview'>";
 
-    preview.innerHTML = imageTag;
+//    preview.innerHTML = imageTag;
+
+    var slide = document.querySelector('#slide');
+    slide.src = src;
+}
+
+dc.nextSlide = function() {
+    incrementSlidePointer(1);
+}
+
+dc.previousSlide = function() {
+    incrementSlidePointer(-1);
+}
+
+function incrementSlidePointer(count) {
+    var slide = document.querySelector('#slide');
+    var currentImageUrl = slide.src;
+    var indexOfCurrent = dc.images.indexOf(currentImageUrl);
+    var nextIndex = (indexOfCurrent + count) % dc.images.length;
+    if (nextIndex < 0) {
+        nextIndex += dc.images.length;
+    }
+    var nextImageUrl = dc.images[nextIndex];
+    console.log("Viewing next image: ", nextImageUrl);
+    slide.src = nextImageUrl;
 }
 
 function getFileExtension(absolutePath) {
