@@ -85,15 +85,25 @@ public class DocumentService {
         }
     }
 
-    private String determineDestinationDirectory(String destination) {
-        String directory = destination.substring(0, destination.lastIndexOf(DEFAULT_DIRECTORY_DELIMITER));
+    private String determineDestinationDirectory(String fileAbsolutePath) {
+        String directory = fileAbsolutePath.substring(0, fileAbsolutePath.lastIndexOf(DEFAULT_DIRECTORY_DELIMITER));
         log.info("Calculated directory: '{}'.", directory);
         return directory;
     }
 
-    public String determineFileName(String absolutePath) {
-        log.info("Calculating file name from absolute path: '{}'.", absolutePath);
-        String fileName = absolutePath.substring(1 + absolutePath.lastIndexOf(DEFAULT_DIRECTORY_DELIMITER));
+    public String determineDirectoryName(String directoryAbsolutePath) {
+        int lastDelimiter = directoryAbsolutePath.lastIndexOf(DEFAULT_DIRECTORY_DELIMITER);
+        if (lastDelimiter == -1) {
+            return directoryAbsolutePath;
+        }
+        String directoryName = directoryAbsolutePath.substring(1 + lastDelimiter);
+        log.info("Calculated directory name: '{}'.", directoryName);
+        return directoryName;
+    }
+
+    public String determineFileName(String fileAbsolutePath) {
+        log.info("Calculating file name from absolute path: '{}'.", fileAbsolutePath);
+        String fileName = fileAbsolutePath.substring(1 + fileAbsolutePath.lastIndexOf(DEFAULT_DIRECTORY_DELIMITER));
         log.info("Calculated file name: '{}'.", fileName);
         return fileName;
     }
@@ -155,7 +165,6 @@ public class DocumentService {
     public void writeFilesZipToStream(List<String> filePaths, OutputStream outputStream) {
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
             for (String path : filePaths) {
-                log.info("Adding file '{}' to .zip.", path);
                 String fileName = determineFileName(path);
                 String location = determineDestinationDirectory(path);
 
@@ -178,27 +187,13 @@ public class DocumentService {
         log.info("Added all files.");
     }
 
-    private void addToZip(ZipOutputStream zipOutputStream, String fileName, File file) throws IOException, SQLException {
-        zipOutputStream.putNextEntry(new ZipEntry(fileName));
-        lobHelper.writeBlobToOutputStream(file.getContents(), zipOutputStream);
-        zipOutputStream.closeEntry();
-    }
-
-    public void writeDirectoryZipToStream(String directory, ServletOutputStream outputStream) {
-        DirectoryStructure directoryStructure = directoryStructureRepository.get()
-                .orElseThrow(() -> new ResourceNotFoundException("Directory structure is not defined; can't find directory '" + directory + "'."))
-                .getDirectoryStructure();
-
-        DirectoryStructure requiredDir = directoryStructure.find(directory)
-                .orElseThrow(() -> new ResourceNotFoundException("Directory '" + directory + "' not found."));
-
-        List<File> files = fileRepository.fetchFilesFromDirectoryRecursively(directory);
+    public void writeDirectoryZipToStream(String directoryAbsolutePath, ServletOutputStream outputStream) {
+        List<File> files = fileRepository.fetchFilesFromDirectoryRecursively(directoryAbsolutePath);
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
             for (File file : files) {
-                String absolutePath = file.getPath() + DEFAULT_DIRECTORY_DELIMITER + file.getName();
-                log.info("Adding file '{}' to .zip.", absolutePath);
-                addToZip(zipOutputStream, absolutePath, file);
+                String filePathRelativeToDirectoryParent = calculatePathForZip(directoryAbsolutePath, file);
+                addToZip(zipOutputStream, filePathRelativeToDirectoryParent, file);
             }
         } catch (IOException | SQLException e) {
             throw new ZipGenerationException("Failed to generate .zip.", e);
@@ -209,45 +204,19 @@ public class DocumentService {
         log.info("Added all files.");
     }
 
-//    public void writeDirectoryZipToStream(String directory, ServletOutputStream outputStream) {
-//        DirectoryStructure directoryStructure = directoryStructureRepository.get()
-//                .orElseThrow(() -> new ResourceNotFoundException("Directory structure is not defined; can't find directory '" + directory + "'."))
-//                .getDirectoryStructure();
-//
-//        DirectoryStructure requiredDir = directoryStructure.find(directory)
-//                .orElseThrow(() -> new ResourceNotFoundException("Directory '" + directory + "' not found."));
-//
-//        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
-//            ZipEntry zippedDir = new ZipEntry(requiredDir.getDirectoryName() + ZIP_DIRECTORY_DELIMITER);
-//            zipOutputStream.putNextEntry(zippedDir);
-//
-//            List<File> filesInDir = fileRepository.fetchFilesFromDirectory(dirAbsolutePath);
-//
-//            for (File file : filesInDir) {
-//                zippedDir.
-//            }
-//
-//            for (String path : filePaths) {
-//                log.info("Adding file '{}' to .zip.", path);
-//                String fileName = determineFileName(path);
-//                String location = determineDestinationDirectory(path);
-//
-//                Optional<File> maybeFile = fileRepository.getByNameAndLocation(fileName, location);
-//                if (!maybeFile.isPresent()) {
-//                    log.warn("File '{}' not found; will not add it to archive.", path);
-//                    continue;
-//                }
-//
-//                File file = maybeFile.get();
-//
-//                addToZip(zipOutputStream, fileName, file);
-//            }
-//        } catch (IOException | SQLException e) {
-//            throw new ZipGenerationException("Failed to generate .zip.", e);
-//        } catch (Exception e) {
-//            throw new ZipGenerationException(e);
-//        }
-//
-//        log.info("Added all files.");
-//    }
+    private String calculatePathForZip(String directoryAbsolutePath, File file) {
+        String fileAbsolutePath = file.getPath() + DEFAULT_DIRECTORY_DELIMITER + file.getName();
+        String directoryName = determineDirectoryName(directoryAbsolutePath);
+        String prefix = directoryAbsolutePath.substring(0, directoryAbsolutePath.indexOf(directoryName));
+        String filePathRelativeToDirectoryParent = fileAbsolutePath.substring(prefix.length());
+        return filePathRelativeToDirectoryParent;
+    }
+
+    private void addToZip(ZipOutputStream zipOutputStream, String filePath, File file) throws IOException, SQLException {
+        log.info("Adding file '{}' to .zip.", filePath);
+        zipOutputStream.putNextEntry(new ZipEntry(filePath));
+        lobHelper.writeBlobToOutputStream(file.getContents(), zipOutputStream);
+        zipOutputStream.closeEntry();
+    }
+
 }

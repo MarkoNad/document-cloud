@@ -85,14 +85,16 @@ public class DocumentController {
     }
 
     @GetMapping(value="get-directory", produces="application/zip")
-    public void getDirectory(@RequestParam("directory") String directory, HttpServletResponse response) {
-        log.info("Received request to create a .zip of directory {}.", directory);
+    public void getDirectory(@RequestParam("directory") String directoryAbsolutePath, HttpServletResponse response) {
+        log.info("Received request to create a .zip of directory {}.", directoryAbsolutePath);
+
+        String directoryName = documentService.determineDirectoryName(directoryAbsolutePath);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.addHeader("Content-Disposition", "attachment; filename=\"" + directory + ".zip\"");
+        response.addHeader("Content-Disposition", "attachment; filename=\"" + directoryName + ".zip\"");
 
         try {
-            documentService.writeDirectoryZipToStream(directory, response.getOutputStream());
+            documentService.writeDirectoryZipToStream(directoryAbsolutePath, response.getOutputStream());
         } catch(Exception e) {
             log.error("Error occurred: ", e);
             // TODO: handle
