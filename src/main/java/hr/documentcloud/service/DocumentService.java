@@ -6,6 +6,7 @@ import hr.documentcloud.dal.File;
 import hr.documentcloud.dal.FileRepository;
 import hr.documentcloud.dal.util.LobHelper;
 import hr.documentcloud.exception.FileStoringException;
+import hr.documentcloud.exception.ProcessingException;
 import hr.documentcloud.exception.ResourceNotFoundException;
 import hr.documentcloud.exception.ZipGenerationException;
 import hr.documentcloud.model.DirectoryStructure;
@@ -163,7 +164,7 @@ public class DocumentService {
         updateDirectoryStructure(newDirectory);
     }
 
-    public void writeFileToStream(String fileAbsolutePath, OutputStream outputStream) throws SQLException, IOException {
+    public void writeFileToStream(String fileAbsolutePath, OutputStream outputStream) {
         String location = determineDestinationDirectory(fileAbsolutePath);
         String fileName = determineFileName(fileAbsolutePath);
 
@@ -171,7 +172,11 @@ public class DocumentService {
                 .orElseThrow(() -> new ResourceNotFoundException("File " + fileName + " not found in " + location + "."));
 
         Blob blob = file.getContents();
-        lobHelper.writeBlobToOutputStream(blob, outputStream);
+        try {
+            lobHelper.writeBlobToOutputStream(blob, outputStream);
+        } catch (SQLException | IOException e) {
+            throw new ProcessingException("Failed to write file " + fileAbsolutePath + " to stream.", e);
+        }
     }
 
     public void writeFilesZipToStream(List<String> filePaths, OutputStream outputStream) {
@@ -192,8 +197,6 @@ public class DocumentService {
             }
         } catch (IOException | SQLException e) {
             throw new ZipGenerationException("Failed to generate .zip.", e);
-        } catch (Exception e) {
-            throw new ZipGenerationException(e);
         }
 
         log.info("Added all files.");
@@ -209,8 +212,6 @@ public class DocumentService {
             }
         } catch (IOException | SQLException e) {
             throw new ZipGenerationException("Failed to generate .zip.", e);
-        } catch (Exception e) {
-            throw new ZipGenerationException(e);
         }
 
         log.info("Added all files.");
