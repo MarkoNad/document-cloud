@@ -200,9 +200,11 @@ function showWorkingDirFileDetails() {
 
 function populateDirectoryTemplate(directoryName) {
     var absolutePath = getWorkingDirectory() + DIRECTORY_DELIMITER + directoryName;
+    var downloadUrl = encodeURI(getDirectoryUrl + "?directory=" + absolutePath);
     return "<div onclick=\"$dc.changeDirectory('" + absolutePath + "')\">" +
             "<i class=\"material-icons\">folder2</i>" +
             "<span>" + directoryName + "</span>" +
+            "<a class=\"material-icons\" href=\"" + downloadUrl + "\">download</a>" +
         "</div>";
 }
 

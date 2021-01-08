@@ -207,9 +207,8 @@ public class DocumentService {
     private String calculatePathForZip(String directoryAbsolutePath, File file) {
         String fileAbsolutePath = file.getPath() + DEFAULT_DIRECTORY_DELIMITER + file.getName();
         String directoryName = determineDirectoryName(directoryAbsolutePath);
-        String prefix = directoryAbsolutePath.substring(0, directoryAbsolutePath.indexOf(directoryName));
-        String filePathRelativeToDirectoryParent = fileAbsolutePath.substring(prefix.length());
-        return filePathRelativeToDirectoryParent;
+        String prefixToRemove = directoryAbsolutePath.substring(0, directoryAbsolutePath.indexOf(directoryName));
+        return fileAbsolutePath.substring(prefixToRemove.length());
     }
 
     private void addToZip(ZipOutputStream zipOutputStream, String filePath, File file) throws IOException, SQLException {
