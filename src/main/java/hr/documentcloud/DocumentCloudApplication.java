@@ -23,4 +23,9 @@ public class DocumentCloudApplication {
 		return Executors.newCachedThreadPool();
 	}
 
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
 }

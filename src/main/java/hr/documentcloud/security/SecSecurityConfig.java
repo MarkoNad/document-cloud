@@ -1,5 +1,6 @@
 package hr.documentcloud.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,54 +13,79 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
-@Configuration
+@Configuration // TODO
 @EnableWebSecurity
 public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public SecSecurityConfig(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("user1").password(passwordEncoder().encode("user1Pass")).roles("USER")
+                .withUser("user1").password(passwordEncoder.encode("user1Pass")).roles("USER")
                 .and()
-                .withUser("user2").password(passwordEncoder().encode("user2Pass")).roles("USER")
+                .withUser("user2").password(passwordEncoder.encode("user2Pass")).roles("USER")
                 .and()
-                .withUser("admin").password(passwordEncoder().encode("adminPass")).roles("ADMIN");
+                .withUser("admin").password(passwordEncoder.encode("adminPass")).roles("ADMIN");
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
 //        http
 //                .csrf().disable()
+//                .requestMatchers()
+//                .antMatchers("/**")
+//                .and()
 //                .authorizeRequests()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/anonymous*").anonymous()
-//                .antMatchers("/login*").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .httpBasic();
+
+
+//        http
+//                .authorizeRequests()
+//                .antMatchers( "/login", "/css/**")
+//                .permitAll()
 //                .anyRequest().authenticated()
 //                .and()
 //                .formLogin()
-//                .loginPage("/login.html")
-//                .loginProcessingUrl("/perform_login")
-//                .defaultSuccessUrl("/homepage.html", true)
-//                .failureUrl("/login.html?error=true")
-//                .failureHandler(authenticationFailureHandler())
 //                .and()
 //                .logout()
-//                .logoutUrl("/perform_logout")
-//                .deleteCookies("JSESSIONID")
-//                .logoutSuccessHandler(logoutSuccessHandler())
-//                .and()
-//                .requiresChannel()
-//                .anyRequest()
-//                .requiresSecure();
+//                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+//        log.info("Web security enabled");
+
+
         http
                 .csrf().disable()
-                .requestMatchers()
-                .antMatchers("/**")
-                .and()
                 .authorizeRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/anonymous*").anonymous()
+//                .antMatchers("/login*").permitAll()
                 .anyRequest().authenticated()
+
+//                .and()
+//                .requiresChannel()
+//                .anyRequest().requiresSecure()
+
                 .and()
-                .httpBasic();
+                .formLogin()
+//                .loginPage("/login.html")
+//                .loginPage("/view/login2.jsp")
+//                .loginProcessingUrl("/perform_login")
+                .defaultSuccessUrl("/page.html", true)
+//                .failureUrl("/login.html?error=true")
+//                .failureHandler(authenticationFailureHandler())
+
+                .and()
+                .logout()
+                .logoutUrl("/perform_logout")
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessHandler(logoutSuccessHandler());
     }
 
     @Bean
@@ -77,9 +103,9 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         return new CustomAuthenticationFailureHandler();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
 }

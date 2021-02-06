@@ -1,4 +1,4 @@
-var root = "https://document-cloud.hr/documentcloud";
+var root = "https://document-cloud.hr/documentcloud/api";
 
 var fileUploadUrl = root + "/upload-file";
 var createDirectoryUrl = root + "/create-directory";

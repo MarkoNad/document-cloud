@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
-@RestController("/")
+@RestController("/api")
 @Log4j2
 public class DocumentController {
 
@@ -24,7 +24,7 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @PostMapping("upload-file")
+    @PostMapping("/upload-file")
     public void receiveFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("absolute-path") String absolutePath,
@@ -33,19 +33,19 @@ public class DocumentController {
         documentService.storeFile(file, absolutePath, lastModifiedMilliseconds);
     }
 
-    @PostMapping("create-directory")
+    @PostMapping("/create-directory")
     public void createDirectory(@RequestParam("directory") String newDirectory) {
         log.info("Received request to create a new directory: '{}'.", newDirectory);
         documentService.createDirectory(newDirectory);
     }
 
-    @GetMapping("get-files-details")
+    @GetMapping("/get-files-details")
     public @ResponseBody List<DocumentDto> getFilesDetails(@RequestParam("directory") String directory) {
         log.info("Received request to fetch details for files in directory '{}'.", directory);
         return documentService.fetchFilesDetails(directory);
     }
 
-    @GetMapping(value = "get-file")
+    @GetMapping(value = "/get-file")
     public void getFile(@RequestParam("file") String fileAbsolutePath, HttpServletResponse response) throws IOException {
         log.info("Received request to fetch file '{}'.", fileAbsolutePath);
         String fileName = documentService.determineFileName(fileAbsolutePath);
@@ -53,7 +53,7 @@ public class DocumentController {
         documentService.writeFileToStream(fileAbsolutePath, response.getOutputStream());
     }
 
-    @GetMapping(value="get-files", produces="application/zip")
+    @GetMapping(value="/get-files", produces="application/zip")
     public void getFiles(@RequestParam("files") List<String> filePaths, HttpServletResponse response) throws IOException {
         log.info("Received request to create a .zip with files {}.", filePaths);
         response.setStatus(HttpServletResponse.SC_OK);
@@ -61,7 +61,7 @@ public class DocumentController {
         documentService.writeFilesZipToStream(filePaths, response.getOutputStream());
     }
 
-    @GetMapping(value="get-directory", produces="application/zip")
+    @GetMapping(value="/get-directory", produces="application/zip")
     public void getDirectory(@RequestParam("directory") String directoryAbsolutePath, HttpServletResponse response) throws IOException {
         log.info("Received request to create a .zip of directory {}.", directoryAbsolutePath);
         String directoryName = documentService.determineDirectoryName(directoryAbsolutePath);
